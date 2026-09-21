@@ -16,6 +16,8 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.pool import StaticPool
 
 from bluet.agents.analyzer import LogicSpec
+from bluet.agents.refactor import CounterExample, ProposedCode
+from bluet.errors import LLMSchemaOutputError, LLMUnavailableError
 from bluet.orchestrator import (
     MAX_RETRIES,
     EventBus,
@@ -163,7 +165,9 @@ async def test_analyze_node_round_trips_real_logic_spec(
     async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
         tmp_path / ".bluet" / "state.db"
     ) as saver:
-        graph = build_refactor_graph(bus, checkpointer=saver)
+        graph = build_refactor_graph(
+            bus, checkpointer=saver, refactor_agent=_StubRefactorAgent(ProposedCode(file_path="dummy", code=""))
+        )
         final = await graph.ainvoke(state, config=run_config(job.id))
 
     raw = final["logic_spec"]
@@ -193,7 +197,9 @@ async def test_analyze_event_persists_to_agent_event(
     async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
         tmp_path / ".bluet" / "state.db"
     ) as saver:
-        graph = build_refactor_graph(bus, checkpointer=saver)
+        graph = build_refactor_graph(
+            bus, checkpointer=saver, refactor_agent=_StubRefactorAgent(ProposedCode(file_path="dummy", code=""))
+        )
         await graph.ainvoke(state, config=run_config(job.id))
 
     async with session_factory() as sess:
@@ -204,3 +210,184 @@ async def test_analyze_event_persists_to_agent_event(
     payload = json.loads(analysis.payload_json)
     assert payload["job_id"] == job.id
     assert payload["stage"] == "analyze"
+
+
+class _StubRefactorAgent:
+    """Deterministic stand-in for :class:`RefactorAgent` (no LLM, no formatter)."""
+
+    def __init__(
+        self,
+        proposed: ProposedCode | None = None,
+        *,
+        exc: Exception | None = None,
+    ) -> None:
+        self.proposed = proposed
+        self.exc = exc
+        self.calls = 0
+        self.last_args: tuple[str, str, list[CounterExample] | None] | None = None
+
+    async def refactor(self, spec, *, target_language, current_file, counter_examples=None):
+        self.calls += 1
+        self.last_args = (target_language, current_file, counter_examples)
+        if self.exc is not None:
+            raise self.exc
+        return self.proposed
+
+
+def _fixture_state(job_id: int) -> dict:
+    fixtures = Path(__file__).resolve().parents[1] / "fixtures"
+    state = _initial_state(job_id)
+    state.update(
+        repo_path=str(fixtures),
+        target_language="python",
+        current_file="python-legacy/simple_function.py",
+    )
+    return state
+
+
+@pytest.mark.asyncio
+async def test_refactor_self_heal_loop_on_parity_failure(
+    session_factory: async_sessionmaker,
+    job,
+    tmp_path: Path,
+) -> None:
+    """Buggy proposal triggers self-heal: MAX_RETRIES retries, then fail."""
+    buggy_code = "def compute_total(quantity, unit_price):\n    return quantity + unit_price\n"
+    fake = _StubRefactorAgent(
+        ProposedCode(
+            file_path="python-legacy/simple_function.py",
+            code=buggy_code,
+            imports_added=[],
+            notes="buggy implementation",
+        )
+    )
+    state = _fixture_state(job.id)
+
+    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
+        tmp_path / ".bluet" / "state.db"
+    ) as saver:
+        graph = build_refactor_graph(
+            bus, checkpointer=saver, verify_node=verify_node, refactor_agent=fake
+        )
+        final = await graph.ainvoke(state, config=run_config(job.id))
+
+    # Self-heal loop runs MAX_RETRIES times (3), so refactor_agent called 4 times total
+    assert fake.calls == MAX_RETRIES + 1
+    # On retries 2-4, the agent receives counter-examples from the previous failure
+    assert fake.last_args is not None
+    lang, current_file, counter_examples = fake.last_args
+    assert (lang, current_file) == ("python", "python-legacy/simple_function.py")
+    assert counter_examples, "agent should receive counter-examples on retry"
+    assert counter_examples[0].function_name == "compute_total"
+    # Parity still fails after max retries
+    assert final["retry_count"] == MAX_RETRIES
+    assert final["parity_result"]["status"] == "fail"
+
+    async with session_factory() as sess:
+        events = await list_events_for_job(sess, job.id)
+    types = [e.event_type for e in events]
+    assert types.count("task.analysis") == 1
+    assert types.count("task.refactor") == MAX_RETRIES + 1
+    assert types.count("task.verify") == MAX_RETRIES + 1
+    assert types.count("feedback.regression") == MAX_RETRIES
+
+
+@pytest.mark.asyncio
+async def test_refactor_correct_proposal_passes_on_first_verify(
+    session_factory: async_sessionmaker,
+    job,
+    tmp_path: Path,
+) -> None:
+    """Correct proposal passes parity on first try."""
+    correct_code = "def compute_total(quantity, unit_price):\n    return quantity * unit_price\n"
+    fake = _StubRefactorAgent(
+        ProposedCode(
+            file_path="python-legacy/simple_function.py",
+            code=correct_code,
+            imports_added=[],
+            notes="correct implementation",
+        )
+    )
+    state = _fixture_state(job.id)
+
+    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
+        tmp_path / ".bluet" / "state.db"
+    ) as saver:
+        graph = build_refactor_graph(
+            bus, checkpointer=saver, verify_node=verify_node, refactor_agent=fake
+        )
+        final = await graph.ainvoke(state, config=run_config(job.id))
+
+    assert fake.calls == 1
+    lang, current_file, counter_examples = fake.last_args
+    assert (lang, current_file) == ("python", "python-legacy/simple_function.py")
+    assert counter_examples == [], "no counter-examples on first pass"
+    assert final["retry_count"] == 0
+    assert final["parity_result"]["status"] == "pass"
+
+    async with session_factory() as sess:
+        events = await list_events_for_job(sess, job.id)
+    types = [e.event_type for e in events]
+    assert types.count("task.analysis") == 1
+    assert types.count("task.refactor") == 1
+    assert types.count("task.verify") == 1
+    assert types.count("feedback.regression") == 0
+
+
+@pytest.mark.asyncio
+async def test_refactor_node_fails_soft_on_llm_unavailable(
+    session_factory: async_sessionmaker,
+    job,
+    tmp_path: Path,
+) -> None:
+    fake = _StubRefactorAgent(exc=LLMUnavailableError("no backend on localhost"))
+    state = _fixture_state(job.id)
+
+    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
+        tmp_path / ".bluet" / "state.db"
+    ) as saver:
+        graph = build_refactor_graph(
+            bus, checkpointer=saver, verify_node=verify_node, refactor_agent=fake
+        )
+        final = await graph.ainvoke(state, config=run_config(job.id))
+
+    assert final["proposed_code"] is None, "LLM failure must degrade, not abort"
+    assert final["parity_result"]["status"] == "pass"
+    assert final["retry_count"] == 0
+
+    async with session_factory() as sess:
+        events = await list_events_for_job(sess, job.id)
+    warns = [json.loads(e.payload_json) for e in events if e.event_type == "feedback.warning"]
+    assert warns, "expected a feedback.warning for the refactor failure"
+    assert all(w["source"] == "refactor" for w in warns)
+    assert "no backend on localhost" in warns[-1]["reason"]
+
+
+@pytest.mark.asyncio
+async def test_refactor_node_fails_soft_on_schema_output_error(
+    session_factory: async_sessionmaker,
+    job,
+    tmp_path: Path,
+) -> None:
+    fake = _StubRefactorAgent(
+        exc=LLMSchemaOutputError("model could not produce ProposedCode after retries")
+    )
+    state = _fixture_state(job.id)
+
+    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
+        tmp_path / ".bluet" / "state.db"
+    ) as saver:
+        graph = build_refactor_graph(
+            bus, checkpointer=saver, verify_node=verify_node, refactor_agent=fake
+        )
+        final = await graph.ainvoke(state, config=run_config(job.id))
+
+    assert final["proposed_code"] is None, "schema-output failure must degrade, not abort"
+    assert final["retry_count"] == 0
+
+    async with session_factory() as sess:
+        events = await list_events_for_job(sess, job.id)
+    warns = [json.loads(e.payload_json) for e in events if e.event_type == "feedback.warning"]
+    assert warns, "expected a feedback.warning for the schema-output failure"
+    assert warns[-1]["source"] == "refactor"
+    assert "could not produce ProposedCode" in warns[-1]["reason"]
