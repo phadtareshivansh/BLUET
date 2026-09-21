@@ -30,6 +30,8 @@ from bluet.orchestrator.events import EventBus
 
 MAX_RETRIES = 3
 
+_DEFAULT_CONTEXT_STORE = InMemoryContextStore()
+
 TOPIC_ANALYZE = "task.analysis"
 TOPIC_INDEX = "task.context"
 TOPIC_REFACTOR = "task.refactor"
@@ -104,7 +106,7 @@ async def context_index_node(
         return {}
     spec = LogicSpec.model_validate(raw)
     try:
-        summary = context_store.index_logic_spec(
+        summary = await context_store.index_logic_spec(
             spec, file_path=state["current_file"], language=state["target_language"]
         )
     except ContextIndexError as exc:
@@ -165,7 +167,7 @@ def build_refactor_graph(
     *,
     checkpointer: AsyncSqliteSaver | None = None,
     verify_node: Node = verify_node,
-    context_store: ContextStore = InMemoryContextStore(),
+    context_store: ContextStore = _DEFAULT_CONTEXT_STORE,
 ):
     """Assemble and compile the refactor graph.
 

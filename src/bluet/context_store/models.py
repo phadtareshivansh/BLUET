@@ -10,15 +10,13 @@ in-memory fallback.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, Field
 
-from bluet.agents.analyzer.models import LogicSpec
-
 
 def _utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class ContextIndexError(Exception):

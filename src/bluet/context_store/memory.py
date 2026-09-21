@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from bluet.context_store.models import (
     ContextHit,
-    ContextIndexError,
     ContextIndexSummary,
     IndexedFile,
 )
@@ -72,7 +71,7 @@ class InMemoryContextStore:
             indexed_files=indexed_files,
         )
 
-    def query_context(self, query: str, *, top_k: int = 3) -> list[ContextHit]:
+    async def query_context(self, query: str, *, top_k: int = 3) -> list[ContextHit]:
         if not self._documents:
             return []
         query_tokens = set(query.lower().split())

@@ -24,11 +24,11 @@ from bluet.context_store.memory import InMemoryContextStore
 LATENCY_BUDGET_MS = 3.0
 
 __all__ = [
+    "LATENCY_BUDGET_MS",
     "ContextHit",
     "ContextIndexError",
     "ContextIndexSummary",
     "ContextStore",
-    "IndexedFile",
     "InMemoryContextStore",
-    "LATENCY_BUDGET_MS",
+    "IndexedFile",
 ]
