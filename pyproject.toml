@@ -1,0 +1,65 @@
+[project]
+name = "bluet"
+version = "0.1.0"
+description = "Agentic incremental refactoring toolbox."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "langgraph>=0.2.0",
+    "pydantic-ai>=0.0.10",
+    "pyzmq>=26.0.0",
+    "tree-sitter>=0.22.0",
+    "tree-sitter-languages>=1.10.0",
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "aiosqlite>=0.20.0",
+    "pygls>=1.3.0",
+    "textual>=0.86.0",
+    "langgraph-checkpoint-sqlite>=3.0.0",
+    "tree-sitter-language-pack>=1.20.0",
+]
+
+# Optional backends. ``moss`` installs the real Moss SDK (async-heavy:
+# index/load/query are genuine await'd I/O against the Moss HTTP API). It is
+# the ONLY store the latency NFR benchmark measures; the hermetic in-memory
+# store is never a benchmark subject. Moss ships under PolyForm Shield 1.0.0
+# (source-available; internal/testing/oss-only; NOT for production or
+# competing/commercial use) — see README "License gate".
+[project.optional-dependencies]
+moss = ["moss>=1.7.2"]
+
+[project.scripts]
+bluet = "bluet.cli.main:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "hypothesis>=6.0.0",
+    "ruff>=0.4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bluet"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/bluet"]
+
+[pytest]
+addopts = []
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint.per-file-ignores]
+# Legacy-language analyzers are fixtures, not production code: keep them
+# verbatim (py2 encoding declarations, old-style `readlines()` power the
+# parser tests) rather than modernising them.
+"tests/fixtures/python-legacy/*.py" = ["UP009", "FURB129"]
