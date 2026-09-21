@@ -1,1 +1,131 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" width="1200" height="380" role="img" aria-labelledby="t d"><title id="t">BLUET</title><desc id="d">An animated four-petaled bluet flower blooming beside the BLUET wordmark, with petals drifting through a deep blue sky.</desc><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0B1B3A"/><stop offset="0.55" stop-color="#16346B"/><stop offset="1" stop-color="#2A5DAE"/></linearGradient><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#9CC8FF" stop-opacity="0.55"/><stop offset="1" stop-color="#9CC8FF" stop-opacity="0"/></radialGradient><linearGradient id="petal" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#F2F8FF"/><stop offset="0.45" stop-color="#B4D6FB"/><stop offset="1" stop-color="#6FA8EE"/></linearGradient><radialGradient id="core" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#FFF3B0"/><stop offset="1" stop-color="#F3B21B"/></radialGradient><linearGradient id="word" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#B9D7FF"/></linearGradient><path id="pet" d="M0,-2 C-20,-10 -36,-44 -15,-63 C-9,-68 -3,-63 0,-55 C3,-63 9,-68 15,-63 C36,-44 20,-10 0,-2 Z"/><clipPath id="clip"><rect width="1200" height="380" rx="28"/></clipPath></defs><style>text{font-family:"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif}.intro{animation:intro 2s cubic-bezier(.2,.8,.2,1) both}.sway{animation:sway 9s ease-in-out infinite}.pt{animation:pulse 5s ease-in-out infinite}.heart{animation:heart 2.8s ease-in-out infinite}.glow{animation:glow 5s ease-in-out infinite}.fp{animation:fall 11s linear infinite;opacity:0}.tw{animation:twinkle 3s ease-in-out infinite}.w1{animation:wave 14s linear infinite}.w2{animation:wave 9s linear infinite}.r1{animation:rise 1s .4s cubic-bezier(.2,.8,.2,1) both}.r2{animation:rise 1s .7s cubic-bezier(.2,.8,.2,1) both}.r3{animation:rise 1s 1s cubic-bezier(.2,.8,.2,1) both}.r4{animation:rise 1s 1.3s cubic-bezier(.2,.8,.2,1) both}@keyframes intro{from{transform:scale(0) rotate(-140deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}@keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}@keyframes heart{0%,100%{transform:scale(1)}50%{transform:scale(1.16)}}@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}@keyframes fall{0%{transform:translate(0,-20px) rotate(0deg);opacity:0}10%{opacity:.8}90%{opacity:.8}100%{transform:translate(-140px,420px) rotate(420deg);opacity:0}}@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.9}}@keyframes wave{to{transform:translateX(-600px)}}@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){*{animation:none!important;opacity:1!important}.fp{opacity:0!important}}</style><g clip-path="url(#clip)"><rect width="1200" height="380" fill="url(#bg)"/><circle class="glow" cx="215" cy="188" r="230" fill="url(#glow)"/><g fill="#DDEBFF"><circle class="tw" cx="90" cy="60" r="2" style="animation-delay:0s"/><circle class="tw" cx="380" cy="40" r="1.6" style="animation-delay:.8s"/><circle class="tw" cx="720" cy="52" r="2" style="animation-delay:1.6s"/><circle class="tw" cx="1010" cy="70" r="2.2" style="animation-delay:.4s"/><circle class="tw" cx="1130" cy="150" r="1.8" style="animation-delay:2.2s"/><circle class="tw" cx="60" cy="270" r="1.8" style="animation-delay:1.2s"/><circle class="tw" cx="880" cy="24" r="1.6" style="animation-delay:2.6s"/></g><g fill="#CFE5FF"><g transform="translate(120,0)"><ellipse class="fp" rx="7" ry="3.6" style="animation-delay:0s;animation-duration:10s"/></g><g transform="translate(330,0)"><ellipse class="fp" rx="6" ry="3" style="animation-delay:2.5s;animation-duration:12s"/></g><g transform="translate(520,0)"><ellipse class="fp" rx="8" ry="4" style="animation-delay:5s;animation-duration:11s"/></g><g transform="translate(700,0)"><ellipse class="fp" rx="6" ry="3.2" style="animation-delay:1.2s;animation-duration:13s"/></g><g transform="translate(860,0)"><ellipse class="fp" rx="7" ry="3.6" style="animation-delay:6.5s;animation-duration:10s"/></g><g transform="translate(1010,0)"><ellipse class="fp" rx="5" ry="2.8" style="animation-delay:3.4s;animation-duration:12s"/></g><g transform="translate(1150,0)"><ellipse class="fp" rx="7" ry="3.4" style="animation-delay:8s;animation-duration:11s"/></g><g transform="translate(430,0)"><ellipse class="fp" rx="5" ry="2.6" style="animation-delay:7.4s;animation-duration:13s"/></g></g><path class="w1" fill="#FFFFFF" fill-opacity="0.06" d="M0,338 q150,-34 300,0 t300,0 t300,0 t300,0 t300,0 t300,0 t300,0 V380 H0Z"/><path class="w2" fill="#7FB2E5" fill-opacity="0.12" d="M0,354 q150,26 300,0 t300,0 t300,0 t300,0 t300,0 t300,0 t300,0 t300,0 V380 H0Z"/><g transform="translate(215,188) scale(2.25)"><g class="intro"><g class="sway"><g transform="rotate(0)"><g class="pt" style="animation-delay:0s"><use href="#pet" fill="url(#petal)" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8"/></g></g><g transform="rotate(90)"><g class="pt" style="animation-delay:.6s"><use href="#pet" fill="url(#petal)" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8"/></g></g><g transform="rotate(180)"><g class="pt" style="animation-delay:1.2s"><use href="#pet" fill="url(#petal)" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8"/></g></g><g transform="rotate(270)"><g class="pt" style="animation-delay:1.8s"><use href="#pet" fill="url(#petal)" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8"/></g></g><g class="heart"><circle r="10" fill="url(#core)" stroke="#FFFFFF" stroke-opacity=".8" stroke-width="1"/><g fill="#B87900"><circle cx="4" cy="0" r="1.5"/><circle cx="-4" cy="0" r="1.5"/><circle cx="0" cy="4" r="1.5"/><circle cx="0" cy="-4" r="1.5"/></g></g></g></g></g></g><text class="r1" x="442" y="98" font-size="17" font-style="italic" fill="#8FB6EA">bluet (n.)  a small wildflower with four petals and a golden heart</text><text class="r2" x="436" y="212" font-size="116" font-weight="800" letter-spacing="12" fill="url(#word)">BLUET</text><text class="r3" x="442" y="260" font-size="32" font-weight="600" fill="#DCEBFF">Verified legacy code modernization.</text><text class="r4" x="442" y="304" font-size="21" font-weight="600" letter-spacing="1" fill="#FFD75E">Analyze  ·  Synthesize  ·  Verify  ·  Self-heal</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" width="1200" height="380" role="img" aria-labelledby="t d" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYToyOGVkZDhjMi00YjEzLTQzNDEtYTFmMy05MWJjNDM0YmY1YzQAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaALriTNYvS6RqwM5KVdb2JgAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDowN2Y4M2NkMS1iMzlhLTQ4NzgtODkwMi0yMGJhMjE3ZWJlY2JscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNolQO9uRW/in+aBk8Jo6uJiwAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggbNoJ65xCKvq0BxcSz+yzKVHN9Tc8s7owY5Rb/eD2OQmkZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaGB5AAZnhaqZpQHLNlVdPgsAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCA4JpglbCmm/Tmku/ZOtzn1EswX76eMJ7pLt6rDcFFTW2RuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBi5Zmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjI4ZWRkOGMyLTRiMTMtNDM0MS1hMWYzLTkxYmM0MzRiZjVjNC9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjZkNWFiZTc4LTE3MjgtNDlhZi1hZmFkLTA4YWZhYTc3NGQ3ZXJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCBs2gnrnEIq+rQHFxLP7LMpUc31NzyzujBjlFv94PY5CaJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggbjJhhd/yoVDAV42+6zzBJkzPEgEtXBUNYBc7ukVHq+iiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFgg4RA5P4+2z+HkIQdmcTSZLUL9tuyGODASYO24+PwLh2Z0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQOX20yrkE2MUCN70/He/2mM3/9x+PLeoFd6NYhTIcjmXyG5y2c6PvUuAF2n7xLflv/XVb0DBcw4Kx6/Sd/RepZ8=</c2pa:manifest></metadata>
+  <title id="t">BLUET</title>
+  <desc id="d">An animated four-petaled bluet flower blooming beside the BLUET wordmark, with petals drifting through a deep blue sky.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1B3A"/>
+      <stop offset="0.55" stop-color="#16346B"/>
+      <stop offset="1" stop-color="#2A5DAE"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#9CC8FF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#9CC8FF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="petal" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#F2F8FF"/>
+      <stop offset="0.45" stop-color="#B4D6FB"/>
+      <stop offset="1" stop-color="#6FA8EE"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="40%" r="60%">
+      <stop offset="0" stop-color="#FFF3B0"/>
+      <stop offset="1" stop-color="#F3B21B"/>
+    </radialGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B9D7FF"/>
+    </linearGradient>
+    <!-- One notched bluet petal, pointing up from the flower centre -->
+    <path id="pet" d="M0,-2 C-20,-10 -36,-44 -15,-63 C-9,-68 -3,-63 0,-55 C3,-63 9,-68 15,-63 C36,-44 20,-10 0,-2 Z"/>
+    <clipPath id="clip"><rect width="1200" height="380" rx="28"/></clipPath>
+  </defs>
+
+  <style>
+    text { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+    .intro  { animation: intro 2s cubic-bezier(.2,.8,.2,1) both; }
+    .sway   { animation: sway 9s ease-in-out infinite; }
+    .pt     { animation: pulse 5s ease-in-out infinite; }
+    .heart  { animation: heart 2.8s ease-in-out infinite; }
+    .glow   { animation: glow 5s ease-in-out infinite; }
+    .fp     { animation: fall 11s linear infinite; opacity: 0; }
+    .tw     { animation: twinkle 3s ease-in-out infinite; }
+    .w1     { animation: wave 14s linear infinite; }
+    .w2     { animation: wave 9s linear infinite; }
+    .r2     { animation: rise 1s .7s cubic-bezier(.2,.8,.2,1) both; }
+    .r3     { animation: rise 1s 1s cubic-bezier(.2,.8,.2,1) both; }
+    .r4     { animation: rise 1s 1.3s cubic-bezier(.2,.8,.2,1) both; }
+
+    @keyframes intro   { from { transform: scale(0) rotate(-140deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+    @keyframes sway    { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+    @keyframes pulse   { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+    @keyframes heart   { 0%,100% { transform: scale(1); } 50% { transform: scale(1.16); } }
+    @keyframes glow    { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+    @keyframes fall    { 0% { transform: translate(0,-20px) rotate(0deg); opacity: 0; }
+                         10% { opacity: .8; } 90% { opacity: .8; }
+                         100% { transform: translate(-140px,420px) rotate(420deg); opacity: 0; } }
+    @keyframes twinkle { 0%,100% { opacity: .15; } 50% { opacity: .9; } }
+    @keyframes wave    { to { transform: translateX(-600px); } }
+    @keyframes rise    { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; opacity: 1 !important; } .fp { opacity: 0 !important; } }
+  </style>
+
+  <g clip-path="url(#clip)">
+    <rect width="1200" height="380" fill="url(#bg)"/>
+
+    <!-- soft halo behind the flower -->
+    <circle class="glow" cx="215" cy="188" r="230" fill="url(#glow)"/>
+
+    <!-- twinkling stars -->
+    <g fill="#DDEBFF">
+      <circle class="tw" cx="90"  cy="60"  r="2"   style="animation-delay:0s"/>
+      <circle class="tw" cx="380" cy="40"  r="1.6" style="animation-delay:.8s"/>
+      <circle class="tw" cx="720" cy="52"  r="2"   style="animation-delay:1.6s"/>
+      <circle class="tw" cx="1010" cy="70" r="2.2" style="animation-delay:.4s"/>
+      <circle class="tw" cx="1130" cy="150" r="1.8" style="animation-delay:2.2s"/>
+      <circle class="tw" cx="60"  cy="270" r="1.8" style="animation-delay:1.2s"/>
+      <circle class="tw" cx="880" cy="24"  r="1.6" style="animation-delay:2.6s"/>
+    </g>
+
+    <!-- drifting petals -->
+    <g fill="#CFE5FF">
+      <g transform="translate(120,0)"><ellipse class="fp" rx="7" ry="3.6" style="animation-delay:0s;animation-duration:10s"/></g>
+      <g transform="translate(330,0)"><ellipse class="fp" rx="6" ry="3"   style="animation-delay:2.5s;animation-duration:12s"/></g>
+      <g transform="translate(520,0)"><ellipse class="fp" rx="8" ry="4"   style="animation-delay:5s;animation-duration:11s"/></g>
+      <g transform="translate(700,0)"><ellipse class="fp" rx="6" ry="3.2" style="animation-delay:1.2s;animation-duration:13s"/></g>
+      <g transform="translate(860,0)"><ellipse class="fp" rx="7" ry="3.6" style="animation-delay:6.5s;animation-duration:10s"/></g>
+      <g transform="translate(1010,0)"><ellipse class="fp" rx="5" ry="2.8" style="animation-delay:3.4s;animation-duration:12s"/></g>
+      <g transform="translate(1150,0)"><ellipse class="fp" rx="7" ry="3.4" style="animation-delay:8s;animation-duration:11s"/></g>
+      <g transform="translate(430,0)"><ellipse class="fp" rx="5" ry="2.6" style="animation-delay:7.4s;animation-duration:13s"/></g>
+    </g>
+
+    <!-- rolling waves -->
+    <path class="w1" fill="#FFFFFF" fill-opacity="0.06"
+          d="M0,338 q150,-34 300,0 t300,0 t300,0 t300,0 t300,0 t300,0 t300,0 t300,0 V380 H0 Z"/>
+    <path class="w2" fill="#7FB2E5" fill-opacity="0.12"
+          d="M0,354 q150,26 300,0 t300,0 t300,0 t300,0 t300,0 t300,0 t300,0 t300,0 V380 H0 Z"/>
+
+    <!-- the bluet -->
+    <g transform="translate(215,188) scale(2.25)">
+      <g class="intro">
+        <g class="sway">
+          <g transform="rotate(0)">
+            <g class="pt" style="animation-delay:0s"><use href="#pet" fill="url(#petal)" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8"/></g>
+          </g>
+          <g transform="rotate(90)">
+            <g class="pt" style="animation-delay:.6s"><use href="#pet" fill="url(#petal)" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8"/></g>
+          </g>
+          <g transform="rotate(180)">
+            <g class="pt" style="animation-delay:1.2s"><use href="#pet" fill="url(#petal)" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8"/></g>
+          </g>
+          <g transform="rotate(270)">
+            <g class="pt" style="animation-delay:1.8s"><use href="#pet" fill="url(#petal)" stroke="#FFFFFF" stroke-opacity=".7" stroke-width=".8"/></g>
+          </g>
+          <g class="heart">
+            <circle r="10" fill="url(#core)" stroke="#FFFFFF" stroke-opacity=".8" stroke-width="1"/>
+            <g fill="#B87900">
+              <circle cx="4"  cy="0"  r="1.5"/><circle cx="-4" cy="0"  r="1.5"/>
+              <circle cx="0"  cy="4"  r="1.5"/><circle cx="0"  cy="-4" r="1.5"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <!-- wordmark -->
+    <text class="r2" x="436" y="190" font-size="116" font-weight="800" letter-spacing="12" fill="url(#word)">BLUET</text>
+    <text class="r3" x="442" y="238" font-size="32" font-weight="600" fill="#DCEBFF">Verified legacy code modernization.</text>
+    <text class="r4" x="442" y="282" font-size="21" font-weight="600" letter-spacing="1" fill="#FFD75E">Analyze  ·  Synthesize  ·  Verify  ·  Self-heal</text>
+  </g>
+</svg>
