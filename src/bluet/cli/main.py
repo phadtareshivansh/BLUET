@@ -9,6 +9,7 @@ from bluet.cli.doctor import doctor
 from bluet.cli.lsp import lsp
 from bluet.cli.run import run
 from bluet.cli.status import status
+from bluet.cli.tui import tui
 
 app = typer.Typer(
     name="bluet",
@@ -20,6 +21,7 @@ app.command(name="run")(run)
 app.command(name="status")(status)
 app.command(name="diff")(diff)
 app.command(name="lsp")(lsp)
+app.command(name="tui")(tui)
 
 
 if __name__ == "__main__":
