@@ -91,15 +91,11 @@ def docker_command(args: Sequence[str]) -> list[str]:
     return ["wsl.exe", "-d", distro, "docker", *args]
 
 
-def _safe_run(
-    cmd: Sequence[str], timeout: float
-) -> subprocess.CompletedProcess[str] | None:
+def _safe_run(cmd: Sequence[str], timeout: float) -> subprocess.CompletedProcess[str] | None:
     """Run a command, capturing output; return ``None`` if the binary is absent."""
     argv = list(cmd)
     try:
-        return subprocess.run(
-            argv, capture_output=True, text=True, timeout=timeout, check=False
-        )
+        return subprocess.run(argv, capture_output=True, text=True, timeout=timeout, check=False)
     except FileNotFoundError:
         return None
     except subprocess.TimeoutExpired:
@@ -118,8 +114,7 @@ def check_docker() -> tuple[bool, str | None]:
     proc = _safe_run(cmd, DOCKER_INFO_TIMEOUT_SECONDS)
     if proc is None:
         return False, (
-            "Docker CLI not found on PATH - is Docker installed? "
-            f"Install: {DOCKER_INSTALL_URL}"
+            f"Docker CLI not found on PATH - is Docker installed? Install: {DOCKER_INSTALL_URL}"
         )
     if proc.returncode == 0:
         return True, None

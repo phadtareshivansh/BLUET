@@ -42,9 +42,7 @@ class IndexedFile(BaseModel):
     n_functions: int = Field(description="Number of functions indexed")
     n_chunks: int = Field(description="Number of embedding chunks written")
     indexed_at: datetime = Field(default_factory=_utc_now)
-    engine: str = Field(
-        description='Backend that produced the index: "moss" or "memory"'
-    )
+    engine: str = Field(description='Backend that produced the index: "moss" or "memory"')
 
 
 class ContextHit(BaseModel):
@@ -62,12 +60,10 @@ class ContextHit(BaseModel):
 class ContextIndexSummary(BaseModel):
     """Returned by :meth:`ContextStore.index_logic_spec` on success."""
 
-    engine: str = Field(description='Backend that produced the index')
+    engine: str = Field(description="Backend that produced the index")
     n_files: int = Field(default=1)
     n_functions: int = Field(default=0)
     n_chunks: int = Field(default=0)
-    latency_ms: float = Field(
-        default=0.0, description="Honest wall-clock indexing time, measured"
-    )
+    latency_ms: float = Field(default=0.0, description="Honest wall-clock indexing time, measured")
     within_budget: bool = Field(default=True)
     indexed_files: list[IndexedFile] = Field(default_factory=list)

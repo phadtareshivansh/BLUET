@@ -43,7 +43,9 @@ def _apply_mocks(
     def _fake(cmd, **_kwargs) -> subprocess.CompletedProcess[str]:
         argv = list(cmd)
         if "info" in argv:
-            return subprocess.CompletedProcess(argv, info_rc, stderr="daemon down" if info_rc else "")
+            return subprocess.CompletedProcess(
+                argv, info_rc, stderr="daemon down" if info_rc else ""
+            )
         return subprocess.CompletedProcess(argv, gvisor_rc)
 
     monkeypatch.setattr(rt_mod.subprocess, "run", _fake)
@@ -61,7 +63,9 @@ def _norm(output: str) -> str:
 
 
 class TestDockerDown:
-    def test_exits_nonzero_and_blocks(self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    def test_exits_nonzero_and_blocks(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         _apply_mocks(monkeypatch, tmp_path, info_rc=1)
         result = runner.invoke(app, ["doctor"])
         assert result.exit_code == 1
@@ -102,7 +106,12 @@ class TestDockerUpGvisorAvailable:
         assert cfg.status == "READY"
         assert cfg.gvisor_available is True
         assert cfg.docker_running is True
-        assert cfg.limits == {"memory": "2g", "network": "none", "read_only": True, "cap_drop": ["ALL"]}
+        assert cfg.limits == {
+            "memory": "2g",
+            "network": "none",
+            "read_only": True,
+            "cap_drop": ["ALL"],
+        }
 
 
 class TestDockerUpGvisorMissing:
@@ -116,7 +125,9 @@ class TestDockerUpGvisorMissing:
         assert "weaker isolation boundary" in out
         assert "hardened-docker" in out
 
-    def test_records_hardened_backend(self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    def test_records_hardened_backend(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
         _apply_mocks(monkeypatch, tmp_path, info_rc=0, gvisor_rc=1)
         runner.invoke(app, ["doctor"])
         cfg = _loaded(tmp_path)
@@ -145,8 +156,10 @@ class TestWindowsRouting:
         monkeypatch.setattr(
             rt_mod,
             "docker_command",
-            lambda args: seen.append(["wsl.exe", "-d", "Ubuntu-22.04", "docker", *args])
-            or ["wsl.exe", "-d", "Ubuntu-22.04", "docker", *args],
+            lambda args: (
+                seen.append(["wsl.exe", "-d", "Ubuntu-22.04", "docker", *args])
+                or ["wsl.exe", "-d", "Ubuntu-22.04", "docker", *args]
+            ),
         )
 
         result = runner.invoke(app, ["doctor"])

@@ -87,9 +87,7 @@ class MossContextStore(InMemoryContextStore):
 
     engine = "moss"
 
-    def __init__(
-        self, *, project_id: str | None = None, project_key: str | None = None
-    ) -> None:
+    def __init__(self, *, project_id: str | None = None, project_key: str | None = None) -> None:
         super().__init__()
         self._project_id = project_id or os.environ.get("MOSS_PROJECT_ID")
         self._project_key = project_key or os.environ.get("MOSS_PROJECT_KEY")
@@ -111,7 +109,7 @@ class MossContextStore(InMemoryContextStore):
             import moss
         except ImportError as exc:
             raise ContextIndexError(
-                "moss SDK not installed; run `pip install \"bluet[moss]\"` or "
+                'moss SDK not installed; run `pip install "bluet[moss]"` or '
                 "`uv sync --extra moss` to run the Moss latency benchmark",
                 cause="missing-package",
             ) from exc
@@ -205,9 +203,7 @@ class MossContextStore(InMemoryContextStore):
         try:
             results = await session.query(query, opts)
         except Exception as exc:
-            raise ContextIndexError(
-                f"moss query failed: {exc}", cause="engine"
-            ) from exc
+            raise ContextIndexError(f"moss query failed: {exc}", cause="engine") from exc
         if hasattr(results, "time_taken_ms"):
             self._last_query_latency_ms = results.time_taken_ms
         return [

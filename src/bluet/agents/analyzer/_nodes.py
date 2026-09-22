@@ -33,13 +33,11 @@ def first_string(arguments: Node | None) -> str | None:
         return None
     for child in arguments.named_children:
         if child.type == "string":
-            return text(child).strip('"\'')
+            return text(child).strip("\"'")
     return None
 
 
-def iter_scoped(
-    body: Node, *, skip: frozenset[str] = frozenset()
-) -> Iterator[Node]:
+def iter_scoped(body: Node, *, skip: frozenset[str] = frozenset()) -> Iterator[Node]:
     """Yield nodes under ``body`` without descending into ``skip`` types."""
     for node in body.named_children:
         if node.type in skip:

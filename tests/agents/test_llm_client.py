@@ -112,9 +112,7 @@ async def _started(
 
 class TestBackendUnreachable:
     @pytest.mark.asyncio
-    async def test_auto_raises_actionable_error(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_auto_raises_actionable_error(self, monkeypatch: pytest.MonkeyPatch) -> None:
         client = _client(monkeypatch, _unreachable_all)
 
         with pytest.raises(LLMUnavailableError) as excinfo:
@@ -128,9 +126,7 @@ class TestBackendUnreachable:
 
 class TestModelPresent:
     @pytest.mark.asyncio
-    async def test_ollama_reachable_model_present(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_ollama_reachable_model_present(self, monkeypatch: pytest.MonkeyPatch) -> None:
         def handler(request: httpx.Request) -> httpx.Response:
             if request.url.path == OLLAMA_TAGS_PATH:
                 return _ollama_tag_payload([OLLAMA_7B])
@@ -142,9 +138,7 @@ class TestModelPresent:
         assert client.ready
 
     @pytest.mark.asyncio
-    async def test_vllm_reachable_model_present(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_vllm_reachable_model_present(self, monkeypatch: pytest.MonkeyPatch) -> None:
         def handler(request: httpx.Request) -> httpx.Response:
             if request.url.path == VLLM_HEALTH_PATH:
                 return httpx.Response(200, text="OK")
@@ -179,7 +173,9 @@ class TestModelMissingAcceptPull:
             asked.append(prompt)
             return True
 
-        monkeypatch.setattr(llm_mod, "Confirm", type("_Confirm", (), {"ask": staticmethod(fake_confirm)}))
+        monkeypatch.setattr(
+            llm_mod, "Confirm", type("_Confirm", (), {"ask": staticmethod(fake_confirm)})
+        )
 
         client = await _started(monkeypatch, handler)
         assert asked, "the pull prompt must have been shown"
@@ -191,9 +187,7 @@ class TestModelMissingAcceptPull:
 
 class TestModelMissingDeclineFallback:
     @pytest.mark.asyncio
-    async def test_declines_and_uses_lighter_model(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_declines_and_uses_lighter_model(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(llm_mod, "detect_vram_gb", lambda: 16.0)
         # desired tier = medium (14B), only the 7B is installed.
 
@@ -205,7 +199,9 @@ class TestModelMissingDeclineFallback:
         def fake_confirm(prompt: str, *, default: bool) -> bool:
             return False
 
-        monkeypatch.setattr(llm_mod, "Confirm", type("_Confirm", (), {"ask": staticmethod(fake_confirm)}))
+        monkeypatch.setattr(
+            llm_mod, "Confirm", type("_Confirm", (), {"ask": staticmethod(fake_confirm)})
+        )
 
         client = await _started(monkeypatch, handler)
         assert not pull_requests
@@ -226,7 +222,9 @@ class TestModelMissingDeclineFallback:
         def eof_confirm(prompt: str, *, default: bool) -> bool:
             raise EOFError("no stdin; non-interactive run")
 
-        monkeypatch.setattr(llm_mod, "Confirm", type("_Confirm", (), {"ask": staticmethod(eof_confirm)}))
+        monkeypatch.setattr(
+            llm_mod, "Confirm", type("_Confirm", (), {"ask": staticmethod(eof_confirm)})
+        )
 
         client = await _started(monkeypatch, handler)
         assert not pull_requests, "EOF must decline the pull, not pull"
@@ -242,7 +240,9 @@ class TestModelMissingDeclineFallback:
         monkeypatch.setattr(
             llm_mod,
             "_console",
-            type("_Console", (), {"print": staticmethod(lambda *a, **k: printed.append(" ".join(a)))}),
+            type(
+                "_Console", (), {"print": staticmethod(lambda *a, **k: printed.append(" ".join(a)))}
+            ),
         )
 
         def handler(request: httpx.Request) -> httpx.Response:
@@ -253,7 +253,9 @@ class TestModelMissingDeclineFallback:
         def eof_confirm(prompt: str, *, default: bool) -> bool:
             raise EOFError
 
-        monkeypatch.setattr(llm_mod, "Confirm", type("_Confirm", (), {"ask": staticmethod(eof_confirm)}))
+        monkeypatch.setattr(
+            llm_mod, "Confirm", type("_Confirm", (), {"ask": staticmethod(eof_confirm)})
+        )
 
         client = _client(monkeypatch, handler)
         with pytest.raises(LLMUnavailableError) as excinfo:
@@ -290,9 +292,7 @@ class TestModelMissingDeclineFallback:
 
 class TestAssumeYes:
     @pytest.mark.asyncio
-    async def test_accepts_pull_without_prompt(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_accepts_pull_without_prompt(self, monkeypatch: pytest.MonkeyPatch) -> None:
         installed: set[str] = set()
 
         def handler(request: httpx.Request) -> httpx.Response:
@@ -317,9 +317,7 @@ class TestAssumeYes:
 
 class TestAutoFallback:
     @pytest.mark.asyncio
-    async def test_falls_back_from_ollama_to_vllm(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_falls_back_from_ollama_to_vllm(self, monkeypatch: pytest.MonkeyPatch) -> None:
         def handler(request: httpx.Request) -> httpx.Response:
             if request.url.port == 11434:
                 raise httpx.ConnectError("refused", request=request)
@@ -358,14 +356,16 @@ class TestModelResolution:
         assert pick_fallback_model([OLLAMA_32B, OLLAMA_7B], OLLAMA_14B, "ollama") == OLLAMA_7B
         assert pick_fallback_model([OLLAMA_32B], OLLAMA_7B, "ollama") == OLLAMA_32B
         assert pick_fallback_model([], OLLAMA_7B, "ollama") is None
-        assert (
-            pick_fallback_model(["some/other:model"], OLLAMA_7B, "ollama") == "some/other:model"
-        )
+        assert pick_fallback_model(["some/other:model"], OLLAMA_7B, "ollama") == "some/other:model"
 
     def test_detect_vram_gb_via_nvidia_smi(self, monkeypatch: pytest.MonkeyPatch) -> None:
         import subprocess
 
-        monkeypatch.setattr(llm_mod, "shutil", type("_Shutil", (), {"which": staticmethod(lambda n: "/usr/bin/nvidia-smi")}))
+        monkeypatch.setattr(
+            llm_mod,
+            "shutil",
+            type("_Shutil", (), {"which": staticmethod(lambda n: "/usr/bin/nvidia-smi")}),
+        )
         # 24576 MiB -> 24.0 GiB
         completed = subprocess.CompletedProcess([], 0, stdout=b" 24576\n")
         monkeypatch.setattr(llm_mod.subprocess, "run", lambda *a, **k: completed)
@@ -374,7 +374,11 @@ class TestModelResolution:
     def test_detect_vram_gb_none_when_probe_fails(self, monkeypatch: pytest.MonkeyPatch) -> None:
         import subprocess
 
-        monkeypatch.setattr(llm_mod, "shutil", type("_Shutil", (), {"which": staticmethod(lambda n: "/usr/bin/nvidia-smi")}))
+        monkeypatch.setattr(
+            llm_mod,
+            "shutil",
+            type("_Shutil", (), {"which": staticmethod(lambda n: "/usr/bin/nvidia-smi")}),
+        )
         completed = subprocess.CompletedProcess([], 1, stdout=b"")
         monkeypatch.setattr(llm_mod.subprocess, "run", lambda *a, **k: completed)
         assert detect_vram_gb() is None
@@ -481,9 +485,7 @@ class TestComplete:
                 self.kwargs = kwargs
 
             async def run(self, content: Any) -> Any:
-                raise UnexpectedModelBehavior(
-                    "Invalid JSON response: too many output retries (1)"
-                )
+                raise UnexpectedModelBehavior("Invalid JSON response: too many output retries (1)")
 
         def handler(request: httpx.Request) -> httpx.Response:
             if request.url.path == OLLAMA_TAGS_PATH:
@@ -507,9 +509,7 @@ class TestComplete:
 
 class TestModelOverrideEnv:
     @pytest.mark.asyncio
-    async def test_bluet_llm_model_forces_model(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_bluet_llm_model_forces_model(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("BLUET_LLM_MODEL", "custom:latest")
 
         def handler(request: httpx.Request) -> httpx.Response:

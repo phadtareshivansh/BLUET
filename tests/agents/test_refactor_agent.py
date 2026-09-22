@@ -23,7 +23,7 @@ from bluet.agents.refactor import (
     RefactorError,
     normalize_language,
 )
-from bluet.agents.refactor.agent import _TEMPLATE
+from bluet.agents.refactor.agent import _TEMPLATES
 from bluet.agents.refactor.formatters import format_code
 from bluet.context_store import ContextHit, ContextIndexError
 
@@ -235,7 +235,7 @@ async def test_language_aliases_route_to_python_formatter() -> None:
 
 
 def test_template_renders_scaffold() -> None:
-    rendered = _TEMPLATE.render(
+    rendered = _TEMPLATES["python"].render(
         module_docstring="Refactored target module",
         imports="# :: imports_added are placed below by the model ::",
         bodies="def compute_total(quantity, unit_price):\n    pass",

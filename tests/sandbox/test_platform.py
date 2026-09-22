@@ -38,9 +38,7 @@ class TestDarwin:
 
 
 class TestWindows:
-    def test_running_wsl2_distro_returns_wsl2_gvisor(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_running_wsl2_distro_returns_wsl2_gvisor(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(platform_mod.platform, "system", lambda: "Windows")
         monkeypatch.setattr(platform_mod, "_wsl_executable", lambda: "/mnt/c/wsl.exe")
         _mock_wsl_run(
@@ -76,9 +74,7 @@ class TestWindows:
         with pytest.raises(BluetEnvironmentError):
             get_execution_backend()
 
-    def test_running_wsl1_distro_is_rejected(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_running_wsl1_distro_is_rejected(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr(platform_mod.platform, "system", lambda: "Windows")
         monkeypatch.setattr(platform_mod, "_wsl_executable", lambda: "/mnt/c/wsl.exe")
         _mock_wsl_run(
@@ -112,11 +108,9 @@ class TestUnsupported:
 class TestWslEncodingQuirk:
     def test_utf16_output_is_decoded(self, monkeypatch: pytest.MonkeyPatch) -> None:
         utf16 = (
-            "  NAME            STATE           VERSION\n"
-            "  * Ubuntu-22.04    Running    2\n"
+            "  NAME            STATE           VERSION\n  * Ubuntu-22.04    Running    2\n"
         ).encode("utf-16-le")
         assert b"\x00" in utf16
         assert platform_mod._decode_wsl_output(utf16) == (
-            "  NAME            STATE           VERSION\n"
-            "  * Ubuntu-22.04    Running    2\n"
+            "  NAME            STATE           VERSION\n  * Ubuntu-22.04    Running    2\n"
         )

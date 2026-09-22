@@ -38,7 +38,9 @@ def _apply(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, info_rc: int, gvisor
     def _fake(cmd, **_kwargs) -> subprocess.CompletedProcess[str]:
         argv = list(cmd)
         if "info" in argv:
-            return subprocess.CompletedProcess(argv, info_rc, stderr="daemon down" if info_rc else "")
+            return subprocess.CompletedProcess(
+                argv, info_rc, stderr="daemon down" if info_rc else ""
+            )
         return subprocess.CompletedProcess(argv, gvisor_rc)
 
     monkeypatch.setattr(rt_mod.subprocess, "run", _fake)

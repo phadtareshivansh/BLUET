@@ -234,9 +234,7 @@ class EventBus:
             if inspect.isawaitable(result):
                 await result
         except Exception:
-            logger.exception(
-                "event bus handler %r raised", getattr(handler, "__name__", handler)
-            )
+            logger.exception("event bus handler %r raised", getattr(handler, "__name__", handler))
 
     async def _persist(self, envelope: dict[str, Any]) -> None:
         # Executed as a detached task: any DAO/DB error must not crash the
@@ -252,9 +250,7 @@ class EventBus:
                 )
         except Exception as exc:  # noqa: BLE001
             self.errors.append(exc)
-            logger.error(
-                "failed to persist event on topic %s: %s", envelope["topic"], exc
-            )
+            logger.error("failed to persist event on topic %s: %s", envelope["topic"], exc)
 
     def _track(self, coro: Awaitable[None]) -> asyncio.Task[None]:
         self._outstanding += 1

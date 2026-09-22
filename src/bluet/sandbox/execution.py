@@ -106,7 +106,19 @@ class LocalRunner(SandboxRunner):
                 argv[0] = sys.executable
             elif argv and argv[0] == "::pytest::":
                 # Run pytest with the generated plugin to emit BLUET_ markers.
-                argv = [sys.executable, "-m", "pytest", "-p", "bluet_pytest_plugin", "-x", "test_parity.py"]
+                argv = [
+                    sys.executable,
+                    "-m",
+                    "pytest",
+                    "-p",
+                    "bluet_pytest_plugin",
+                    "-x",
+                    "test_parity.py",
+                ]
+            elif argv and argv[0] == "::mvn::":
+                # Run Maven with JUnit tests for Java parity.
+                # Assumes a pom.xml is present in the workdir with jqwik dependency.
+                argv = ["mvn", "test", "-Dtest=ParityTest", "-q"]
 
             proc = await asyncio.subprocess.create_subprocess_exec(
                 *argv,

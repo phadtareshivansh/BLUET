@@ -45,9 +45,14 @@ _LANGUAGE_ALIASES: dict[str, str] = {
 }
 _SUFFIX_TO_LANGUAGE: dict[str, str] = {".py": "python", ".java": "java"}
 
-_TEMPLATE = Environment(keep_trailing_newline=True).from_string(
-    Path(resources.files("bluet.agents.refactor").joinpath("templates", "python.py.j2")).read_text()
-)
+_TEMPLATES: dict[str, Environment] = {
+    "python": Environment(keep_trailing_newline=True).from_string(
+        Path(resources.files("bluet.agents.refactor").joinpath("templates", "python.py.j2")).read_text()
+    ),
+    "java": Environment(keep_trailing_newline=True).from_string(
+        Path(resources.files("bluet.agents.refactor").joinpath("templates", "java.py.j2")).read_text()
+    ),
+}
 
 
 def normalize_language(target_language: str | None, *, filename: str | None = None) -> str:
@@ -63,12 +68,12 @@ def normalize_language(target_language: str | None, *, filename: str | None = No
     if canonical is None:
         raise RefactorError(
             f"unsupported target_language={target_language!r} (filename={filename!r}); "
-            "supported: python (java lands in a later prompt)"
+            "supported: python, java"
         )
     return canonical
 
 
-def _function_stub(fn: FunctionDef) -> str:
+def _function_stub(fn: FunctionDef, language: str = "python") -> str:
     """Render one function as a scaffold stub the model must reimplement."""
     params = ", ".join(fn.params) if fn.params else ""
     io: list[str] = []
@@ -76,6 +81,12 @@ def _function_stub(fn: FunctionDef) -> str:
         io.append("i/o: " + ", ".join(sorted({c.name for c in fn.nondeterministic_calls})))
     if fn.state_mutations:
         io.append("mutates: " + ", ".join(fn.state_mutations))
+    hint = f"  // {('; '.join(io))}" if io else ""
+    if language == "java":
+        # Java method stub - we don't know return type from analyzer, use void
+        return_type = "void"
+        return f"    public {return_type} {fn.name}({params}) {{{hint}\n        // TODO: implement\n    }}"
+    # Python default
     hint = f"  # {('; '.join(io))}" if io else ""
     return f"def {fn.name}({params}):{hint}  # line {fn.line}\n    pass"
 
@@ -165,10 +176,12 @@ class RefactorAgent:
         context_hits: list[ContextHit],
         counter_examples: list[CounterExample],
     ) -> list[dict[str, str]]:
-        scaffold = _TEMPLATE.render(
+        template = _TEMPLATES[language]
+        import_comment = "# :: imports_added are placed below by the model ::" if language == "python" else "// :: imports_added are placed below by the model ::"
+        scaffold = template.render(
             module_docstring=f"Refactored target module — {language}.",
-            imports="# :: imports_added are placed below by the model ::",
-            bodies="\n\n".join(_function_stub(fn) for fn in spec.functions),
+            imports=import_comment,
+            bodies="\n\n".join(_function_stub(fn, language) for fn in spec.functions),
         )
         user: dict[str, object] = {
             "functions": _function_summaries(spec),

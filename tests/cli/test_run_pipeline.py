@@ -38,7 +38,11 @@ def _apply(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
         return subprocess.CompletedProcess(argv, 0)
 
     monkeypatch.setattr(rt_mod.subprocess, "run", _fake)
-    monkeypatch.setattr(cli_diag_mod, "write_doctor_backend", lambda backend, path=None: real_write(backend, tmp_path / "doctor.json"))
+    monkeypatch.setattr(
+        cli_diag_mod,
+        "write_doctor_backend",
+        lambda backend, path=None: real_write(backend, tmp_path / "doctor.json"),
+    )
     monkeypatch.setattr(cli_diag_mod, "CONFIG_PATH", tmp_path / "job.json")
 
 

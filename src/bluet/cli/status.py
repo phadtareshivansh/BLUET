@@ -98,7 +98,9 @@ def _show_summary(console: Console, job_id: int, root: Path) -> None:
         for event in events[-8:]:
             payload = json.loads(event.payload_json or "{}")
             latest.add_row(
-                str(event.timestamp), event.agent_name, event.event_type,
+                str(event.timestamp),
+                event.agent_name,
+                event.event_type,
                 str(payload.get("current_file") or "-"),
             )
         console.print(latest)

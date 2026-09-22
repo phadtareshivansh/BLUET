@@ -342,7 +342,10 @@ class LLMClient:
         return self._http_client
 
     async def _open_backend(self, backend: str) -> bool:
-        base = self._base_url_override or {BACKEND_OLLAMA: OLLAMA_BASE, BACKEND_VLLM: VLLM_BASE}[backend]
+        base = (
+            self._base_url_override
+            or {BACKEND_OLLAMA: OLLAMA_BASE, BACKEND_VLLM: VLLM_BASE}[backend]
+        )
         client = self._http()
         try:
             if backend == BACKEND_OLLAMA:
@@ -386,7 +389,9 @@ class LLMClient:
         wants_pull = self.assume_yes
         if not wants_pull and self.resolved_backend == BACKEND_OLLAMA:
             try:
-                wants_pull = Confirm.ask(f"Model {model!r} is not installed. Pull it now?", default=True)
+                wants_pull = Confirm.ask(
+                    f"Model {model!r} is not installed. Pull it now?", default=True
+                )
             except (EOFError, OSError):
                 # No interactive stdin (non-interactive run, piped input, or a
                 # captured/closed terminal): decline and fall through to the

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import typer
 
+from bluet.cli.diff import diff
 from bluet.cli.doctor import doctor
 from bluet.cli.run import run
 from bluet.cli.status import status
@@ -16,6 +17,7 @@ app = typer.Typer(
 app.command(name="doctor")(doctor)
 app.command(name="run")(run)
 app.command(name="status")(status)
+app.command(name="diff")(diff)
 
 
 if __name__ == "__main__":

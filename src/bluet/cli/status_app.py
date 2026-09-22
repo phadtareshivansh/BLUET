@@ -113,10 +113,10 @@ class BluetStatusApp(App):
                 created_at=do_now(),
             )
             self.config.save(self.config_path)
-            log.write_line(f"[system] No job config found - created placeholder at {self.config_path}")
             log.write_line(
-                "[system] Run `bluet doctor` to record the real sandbox backend."
+                f"[system] No job config found - created placeholder at {self.config_path}"
             )
+            log.write_line("[system] Run `bluet doctor` to record the real sandbox backend.")
 
         header.update_config(self.config)
         log.write_line(f"Loaded job configuration: {self.config.job_id}")

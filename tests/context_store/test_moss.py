@@ -99,9 +99,7 @@ class _FakeQueryOptions:
         self.__dict__.update(kwargs)
 
 
-def _mount_fake_moss(
-    monkeypatch: pytest.MonkeyPatch, session: _FakeSessionIndex
-) -> _FakeClient:
+def _mount_fake_moss(monkeypatch: pytest.MonkeyPatch, session: _FakeSessionIndex) -> _FakeClient:
     client = _FakeClient(session)
     module = types.ModuleType("moss")
     module.MossClient = lambda *a, **k: client  # type: ignore[attr-defined]

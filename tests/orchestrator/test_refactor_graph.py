@@ -96,9 +96,10 @@ async def test_retry_loop_terminates_after_max_retries(
         verify_calls.append(state["job_id"])
         return {"parity_result": {"status": "fail", "reason": "regression"}}
 
-    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
-        tmp_path / ".bluet" / "state.db"
-    ) as saver:
+    async with (
+        EventBus(session_factory) as bus,
+        open_sqlite_checkpointer(tmp_path / ".bluet" / "state.db") as saver,
+    ):
         graph = build_refactor_graph(bus, checkpointer=saver, verify_node=always_fail)
 
         final = await graph.ainvoke(_initial_state(job.id), config=run_config(job.id))
@@ -126,9 +127,10 @@ async def test_success_path_ends_after_first_verify(
     job,
     tmp_path: Path,
 ) -> None:
-    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
-        tmp_path / ".bluet" / "state.db"
-    ) as saver:
+    async with (
+        EventBus(session_factory) as bus,
+        open_sqlite_checkpointer(tmp_path / ".bluet" / "state.db") as saver,
+    ):
         graph = build_refactor_graph(bus, checkpointer=saver, verify_node=verify_node)
 
         final = await graph.ainvoke(_initial_state(job.id), config=run_config(job.id))
@@ -162,11 +164,14 @@ async def test_analyze_node_round_trips_real_logic_spec(
         current_file="python-legacy/simple_function.py",
     )
 
-    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
-        tmp_path / ".bluet" / "state.db"
-    ) as saver:
+    async with (
+        EventBus(session_factory) as bus,
+        open_sqlite_checkpointer(tmp_path / ".bluet" / "state.db") as saver,
+    ):
         graph = build_refactor_graph(
-            bus, checkpointer=saver, refactor_agent=_StubRefactorAgent(ProposedCode(file_path="dummy", code=""))
+            bus,
+            checkpointer=saver,
+            refactor_agent=_StubRefactorAgent(ProposedCode(file_path="dummy", code="")),
         )
         final = await graph.ainvoke(state, config=run_config(job.id))
 
@@ -194,11 +199,14 @@ async def test_analyze_event_persists_to_agent_event(
         current_file="python-legacy/simple_function.py",
     )
 
-    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
-        tmp_path / ".bluet" / "state.db"
-    ) as saver:
+    async with (
+        EventBus(session_factory) as bus,
+        open_sqlite_checkpointer(tmp_path / ".bluet" / "state.db") as saver,
+    ):
         graph = build_refactor_graph(
-            bus, checkpointer=saver, refactor_agent=_StubRefactorAgent(ProposedCode(file_path="dummy", code=""))
+            bus,
+            checkpointer=saver,
+            refactor_agent=_StubRefactorAgent(ProposedCode(file_path="dummy", code="")),
         )
         await graph.ainvoke(state, config=run_config(job.id))
 
@@ -263,9 +271,10 @@ async def test_refactor_self_heal_loop_on_parity_failure(
     )
     state = _fixture_state(job.id)
 
-    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
-        tmp_path / ".bluet" / "state.db"
-    ) as saver:
+    async with (
+        EventBus(session_factory) as bus,
+        open_sqlite_checkpointer(tmp_path / ".bluet" / "state.db") as saver,
+    ):
         graph = build_refactor_graph(
             bus, checkpointer=saver, verify_node=verify_node, refactor_agent=fake
         )
@@ -310,9 +319,10 @@ async def test_refactor_correct_proposal_passes_on_first_verify(
     )
     state = _fixture_state(job.id)
 
-    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
-        tmp_path / ".bluet" / "state.db"
-    ) as saver:
+    async with (
+        EventBus(session_factory) as bus,
+        open_sqlite_checkpointer(tmp_path / ".bluet" / "state.db") as saver,
+    ):
         graph = build_refactor_graph(
             bus, checkpointer=saver, verify_node=verify_node, refactor_agent=fake
         )
@@ -343,9 +353,10 @@ async def test_refactor_node_fails_soft_on_llm_unavailable(
     fake = _StubRefactorAgent(exc=LLMUnavailableError("no backend on localhost"))
     state = _fixture_state(job.id)
 
-    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
-        tmp_path / ".bluet" / "state.db"
-    ) as saver:
+    async with (
+        EventBus(session_factory) as bus,
+        open_sqlite_checkpointer(tmp_path / ".bluet" / "state.db") as saver,
+    ):
         graph = build_refactor_graph(
             bus, checkpointer=saver, verify_node=verify_node, refactor_agent=fake
         )
@@ -374,9 +385,10 @@ async def test_refactor_node_fails_soft_on_schema_output_error(
     )
     state = _fixture_state(job.id)
 
-    async with EventBus(session_factory) as bus, open_sqlite_checkpointer(
-        tmp_path / ".bluet" / "state.db"
-    ) as saver:
+    async with (
+        EventBus(session_factory) as bus,
+        open_sqlite_checkpointer(tmp_path / ".bluet" / "state.db") as saver,
+    ):
         graph = build_refactor_graph(
             bus, checkpointer=saver, verify_node=verify_node, refactor_agent=fake
         )

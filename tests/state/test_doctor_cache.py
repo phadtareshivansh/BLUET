@@ -48,7 +48,9 @@ def test_write_creates_parents(tmp_path: Path) -> None:
     assert json.loads(path.read_text())["backend"] == "gvisor"
 
 
-def test_resolve_uses_fresh_cache_without_diagnose(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resolve_uses_fresh_cache_without_diagnose(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     _write_cache(tmp_path / "doctor.json", BACKEND_GVISOR, age=timedelta(seconds=5))
     monkeypatch.setattr(dc, "DOCTOR_CACHE_PATH", tmp_path / "doctor.json")
 
@@ -109,7 +111,9 @@ def test_resolve_returns_unknown_when_diagnose_raises(
     assert resolve_backend() == "unknown"
 
 
-def test_resolve_does_not_cache_when_blocked(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resolve_does_not_cache_when_blocked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     cache_path = tmp_path / "doctor.json"
     monkeypatch.setattr(dc, "DOCTOR_CACHE_PATH", cache_path)
     monkeypatch.setattr(dc, "read_doctor_backend", lambda: None)

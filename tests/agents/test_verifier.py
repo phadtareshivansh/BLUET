@@ -56,9 +56,7 @@ def _file_spec() -> LogicSpec:
                 outputs=["rows"],
                 state_mutations=[],
                 branches=[],
-                nondeterministic_calls=[
-                    NondeterministicCall(kind="file", name="open", line=6)
-                ],
+                nondeterministic_calls=[NondeterministicCall(kind="file", name="open", line=6)],
             )
         ]
     )
@@ -258,8 +256,11 @@ async def test_loop_branch_regression_is_detected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_java_target_is_skipped_until_prompt_26() -> None:
-    verifier = ParityVerifier(max_examples=20)
+async def test_java_verification_generates_maven_harness() -> None:
+    runner = _FakeRunner(
+        ExecutionResult(returncode=0, stdout="BLUET_PASS testAddCharge\n", stderr="")
+    )
+    verifier = ParityVerifier(runner=runner, max_examples=20)
     summary = await verifier.verify(
         _compute_total_spec(),
         LEGACY_TOTAL,
@@ -267,8 +268,18 @@ async def test_java_target_is_skipped_until_prompt_26() -> None:
         target_language="java",
         filename="Billing.java",
     )
-    assert summary.status == "skip"
-    assert summary.skipped_functions == ["compute_total"]
+    assert summary.status == "pass"
+    assert set(runner.files or {}) == {
+        "Legacy.java",
+        "Proposed.java",
+        "ParityTest.java",
+        "pom.xml",
+    }
+    assert runner.argv == ["::mvn::", "test", "-Dtest=ParityTest"]
+    assert "public class Legacy" in (runner.files or {})["Legacy.java"]
+    assert "public class Proposed" in (runner.files or {})["Proposed.java"]
+    assert "ParityTest" in (runner.files or {})["ParityTest.java"]
+    assert "jqwik" in (runner.files or {})["pom.xml"]
 
 
 class _FakeRunner(SandboxRunner):
@@ -277,9 +288,7 @@ class _FakeRunner(SandboxRunner):
         self.files: dict[str, str] | None = None
         self.argv: list[str] | None = None
 
-    async def run(
-        self, files, argv, *, limits=None, timeout: float = 120.0
-    ) -> ExecutionResult:
+    async def run(self, files, argv, *, limits=None, timeout: float = 120.0) -> ExecutionResult:
         self.files = dict(files)
         self.argv = list(argv)
         return self.result
@@ -299,7 +308,12 @@ async def test_runner_contract_files_and_argv() -> None:
         filename="simple_function.py",
     )
     assert summary.status == "pass"
-    assert set(runner.files or {}) == {"legacy.py", "proposed.py", "test_parity.py", "bluet_pytest_plugin.py"}
+    assert set(runner.files or {}) == {
+        "legacy.py",
+        "proposed.py",
+        "test_parity.py",
+        "bluet_pytest_plugin.py",
+    }
     assert runner.argv == ["::pytest::", "test_parity.py"]
     assert (runner.files or {})["legacy.py"] == LEGACY_TOTAL
     assert (runner.files or {})["proposed.py"] == LEGACY_TOTAL

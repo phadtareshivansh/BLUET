@@ -8,9 +8,9 @@ and on any mismatch produces a structured :class:`CounterExample` whose
 ``function_name`` tells the self-heal loop exactly which function's logic is
 wrong.
 
-Per Prompt 2.3, scope is Python-only (Java 8 lands in Prompt 2.6). Functions
-the analyzer flagged as non-deterministic (file/network/JDBC I/O) are excluded
-from automated parity and surfaced on ``skipped_functions`` rather than being
+Supports Python (Hypothesis) and Java (jqwik) targets. Functions the analyzer
+flagged as non-deterministic (file/network/JDBC I/O) are excluded from
+automated parity and surfaced on ``skipped_functions`` rather than being
 fed synthetic inputs, which would be meaningless.
 
 The sandbox runner is constructor-injectable so tests stay hermetic (local
@@ -20,12 +20,12 @@ interface with zero changes here.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from bluet.agents.analyzer import get_logic_spec  # noqa: F401  (re-export for callers)
 from bluet.agents.analyzer.models import FunctionDef, LogicSpec
 from bluet.agents.refactor.models import ProposedCode
-from bluet.agents.verifier.harness import build_harness_files, parse_harness_output
+from bluet.agents.verifier.harness import build_harness_files, build_harness_files_java, parse_harness_output
 from bluet.agents.verifier.models import ParitySummary
 from bluet.sandbox.execution import LocalRunner, SandboxRunner
 
@@ -88,25 +88,36 @@ class ParityVerifier:
         ``harness_error`` set) so the graph always has a verdict.
         """
         language = canonical_target_language(target_language, filename)
-        if language != "python":
-            return ParitySummary(
-                status="skip",
-                skipped_functions=[fn.name for fn in spec.functions],
-            )
 
         checkable, skipped = self._checkable(spec)
         if not checkable:
             return ParitySummary(status="skip", skipped_functions=skipped)
 
-        files = build_harness_files(
-            legacy_source,
-            proposed.code,
-            checkable,
-            max_examples=self.max_examples,
-        )
+        if language == "python":
+            files = build_harness_files(
+                legacy_source,
+                proposed.code,
+                checkable,
+                max_examples=self.max_examples,
+            )
+            test_target = ["::pytest::", "test_parity.py"]
+        elif language == "java":
+            files = build_harness_files_java(
+                legacy_source,
+                proposed.code,
+                checkable,
+                max_examples=self.max_examples,
+            )
+            test_target = ["::mvn::", "test", "-Dtest=ParityTest"]
+        else:
+            return ParitySummary(
+                status="skip",
+                skipped_functions=[fn.name for fn in spec.functions],
+            )
+
         result = await self._runner.run(
             files,
-            ["::pytest::", "test_parity.py"],
+            test_target,
             timeout=self.timeout,
         )
 

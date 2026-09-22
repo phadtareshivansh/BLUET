@@ -69,9 +69,7 @@ def get_parser(language: str) -> LanguageParser:
         raise ValueError(f"no LanguageParser registered for {language!r}") from exc
 
 
-def parser_for_source(
-    target_language: str | None, filename: str | None
-) -> LanguageParser | None:
+def parser_for_source(target_language: str | None, filename: str | None) -> LanguageParser | None:
     """Resolve a parser from an explicit target language, else file suffix."""
     if target_language and target_language.strip():
         try:

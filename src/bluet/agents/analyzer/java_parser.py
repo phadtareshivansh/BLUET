@@ -110,7 +110,13 @@ _FILES_HELPER_LEAVES = {
     "openconnection",
 }
 
-_NETWORK_CALL_LEAVES = {"connect", "openconnection", "getinputstream", "getoutputstream", "openstream"}
+_NETWORK_CALL_LEAVES = {
+    "connect",
+    "openconnection",
+    "getinputstream",
+    "getoutputstream",
+    "openstream",
+}
 
 _BRANCH_KINDS = {
     "if_statement": "if",
@@ -214,10 +220,7 @@ class JavaParser(LanguageParser):
 
     def parse(self, source: str) -> LogicSpec:
         root = parser_for(self.language).parse(source.encode("utf-8")).root_node
-        functions = [
-            self._method(fn)
-            for fn in self._iter_methods(root)
-        ]
+        functions = [self._method(fn) for fn in self._iter_methods(root)]
         return LogicSpec(functions=functions)
 
     def _iter_methods(self, root: Node):

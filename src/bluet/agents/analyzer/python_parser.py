@@ -163,9 +163,7 @@ class PythonParser(LanguageParser):
                 if classified is not None:
                     calls.append(classified)
             elif node.type == "print_statement":
-                calls.append(
-                    NondeterministicCall(kind="console", name="print", line=line(node))
-                )
+                calls.append(NondeterministicCall(kind="console", name="print", line=line(node)))
         return calls
 
     def _classify_call(self, call: Node) -> NondeterministicCall | None:
@@ -173,15 +171,9 @@ class PythonParser(LanguageParser):
         leaf = callee.rsplit(".", 1)[-1]
         target = first_string(call.child_by_field_name("arguments"))
         if callee in _FILE_CALLEES:
-            return NondeterministicCall(
-                kind="file", name=callee, line=line(call), target=target
-            )
+            return NondeterministicCall(kind="file", name=callee, line=line(call), target=target)
         if leaf in _CONSOLE_LEAVES:
-            return NondeterministicCall(
-                kind="console", name=callee, line=line(call), target=None
-            )
+            return NondeterministicCall(kind="console", name=callee, line=line(call), target=None)
         if callee.split(".", 1)[0].lower() in _NETWORK_MODULES:
-            return NondeterministicCall(
-                kind="network", name=callee, line=line(call), target=target
-            )
+            return NondeterministicCall(kind="network", name=callee, line=line(call), target=target)
         return None

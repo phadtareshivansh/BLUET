@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bluet.state.db import utc_now
 from bluet.state.doctor_cache import resolve_backend
-from bluet.state.models import AgentEvent, Job, ParityScore
+from bluet.state.models import AgentEvent, Job, ParityScore, ProposedCodeRow
 
 VALID_BACKENDS = {"gvisor", "hardened-docker", "unknown"}
 
@@ -47,9 +47,7 @@ async def create_job(
     return job
 
 
-async def update_job_status(
-    session: AsyncSession, job_id: int, status: str
-) -> Job | None:
+async def update_job_status(session: AsyncSession, job_id: int, status: str) -> Job | None:
     """Set a job's status (bumping ``updated_at``); returns the row or ``None``."""
     job = await session.get(Job, job_id)
     if job is None:
@@ -111,4 +109,46 @@ async def list_events_for_job(session: AsyncSession, job_id: int) -> list[AgentE
     result = await session.execute(
         select(AgentEvent).where(AgentEvent.job_id == job_id).order_by(AgentEvent.timestamp)
     )
+    return list(result.scalars().all())
+
+
+async def record_proposed_code(
+    session: AsyncSession,
+    job_id: int,
+    module_path: str,
+    code: str,
+    imports_added: list[str] | None = None,
+    notes: str = "",
+) -> ProposedCodeRow:
+    """Persist the proposed code for a module in a job."""
+    import json
+
+    row = ProposedCodeRow(
+        job_id=job_id,
+        module_path=module_path,
+        code=code,
+        imports_added=json.dumps(imports_added or []),
+        notes=notes,
+    )
+    session.add(row)
+    await session.commit()
+    await session.refresh(row)
+    return row
+
+
+async def get_proposed_code(
+    session: AsyncSession, job_id: int, module_path: str
+) -> ProposedCodeRow | None:
+    """Retrieve the proposed code for a module in a job."""
+    result = await session.execute(
+        select(ProposedCodeRow).where(
+            ProposedCodeRow.job_id == job_id, ProposedCodeRow.module_path == module_path
+        )
+    )
+    return result.scalars().first()
+
+
+async def list_proposed_code_for_job(session: AsyncSession, job_id: int) -> list[ProposedCodeRow]:
+    """Return all proposed code rows for a job."""
+    result = await session.execute(select(ProposedCodeRow).where(ProposedCodeRow.job_id == job_id))
     return list(result.scalars().all())

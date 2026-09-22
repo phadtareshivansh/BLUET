@@ -28,6 +28,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from bluet.agents.analyzer import parser_for_source
 from bluet.cli.diagnostics import record_job, render_docker_blocked, render_hardened_warning
 from bluet.errors import BluetEnvironmentError
+from bluet.guardrails import EnkryptGuardrail
 from bluet.orchestrator.events import TOPICS, EventBus
 from bluet.orchestrator.refactor_graph import (
     build_refactor_graph,
@@ -39,6 +40,7 @@ from bluet.state.db import db_path_for_repo, engine_for_repo, init_schema
 from bluet.state.repository import (
     create_job,
     list_events_for_job,
+    record_proposed_code,
     update_job_status,
 )
 
@@ -141,6 +143,7 @@ async def _drive(
     repo_dir: Path,
     files: list[str],
     backend: str | None,
+    guardrail_ok: bool = False,
 ) -> int:
     """Create a job, run the refactor graph per file, and print results.
 
@@ -158,6 +161,9 @@ async def _drive(
     specs: dict[str, dict[str, Any]] = {}
     failures: dict[str, str] = {}
 
+    # Guardrail: instantiate unless overridden via --guardrail-ok
+    guardrail = None if guardrail_ok else EnkryptGuardrail()
+
     async with (
         EventBus(factory) as bus,
         open_sqlite_checkpointer(db_path_for_repo(repo_dir)) as saver,
@@ -169,7 +175,35 @@ async def _drive(
         for topic in TOPICS:
             await bus.subscribe(topic, _on_event)
 
-        graph = build_refactor_graph(bus, checkpointer=saver)
+        # When guardrail_ok is True, we pass a guardrail that logs but doesn't halt.
+        # The EnkryptGuardrail class always blocks on BLOCK severity; we wrap it
+        # to downgrade BLOCK to WARN when guardrail_ok=True.
+        if guardrail_ok:
+
+            class _PermissiveGuardrail(EnkryptGuardrail):
+                def scan_legacy_input(self, source: str):
+                    report = super().scan_legacy_input(source)
+                    if report.blocked:
+                        return GuardrailReport(
+                            tuple(v for v in report.violations if v.severity == Severity.WARN)
+                        )
+                    return report
+
+                def scan_proposed_output(self, code: str):
+                    report = super().scan_proposed_output(code)
+                    if report.blocked:
+                        return GuardrailReport(
+                            tuple(v for v in report.violations if v.severity == Severity.WARN)
+                        )
+                    return report
+
+            from bluet.guardrails.models import GuardrailReport, Severity
+
+            guardrail = _PermissiveGuardrail()
+        else:
+            guardrail = EnkryptGuardrail()
+
+        graph = build_refactor_graph(bus, checkpointer=saver, guardrail=guardrail)
 
         async def _run_all() -> None:
             for file in files:
@@ -185,12 +219,23 @@ async def _drive(
                     spec = final.get("logic_spec")
                     if spec:
                         specs[file] = spec
+                    proposed = final.get("proposed_code")
+                    if proposed:
+                        await record_proposed_code(
+                            factory(),
+                            job_id,
+                            proposed.get("file_path", file),
+                            proposed.get("code", ""),
+                            proposed.get("imports_added", []),
+                            proposed.get("notes", ""),
+                        )
                     progress.done(file)
                 except Exception as exc:  # noqa: BLE001 - surface, then keep going
                     failures[file] = str(exc)
                     progress.fail(file, str(exc))
 
         if os.environ.get("BLUET_LIVE", "1") != "0":
+
             async def _pump() -> None:
                 pending = -1
                 while True:
@@ -253,6 +298,12 @@ def run(
         list[str],
         typer.Option(help="Capability to drop on fallback (repeatable; default ALL)"),
     ] = _CAP_DROP_DEFAULT,
+    guardrail_ok: Annotated[
+        bool,
+        typer.Option(
+            "--guardrail-ok", help="Bypass Enkrypt guardrails if they flag (override halt)"
+        ),
+    ] = False,
 ) -> None:
     """Auto-run sandbox diagnostics, then drive the orchestrator on <path>."""
     console = Console()
@@ -267,7 +318,9 @@ def run(
     if not d.docker_ok:
         render_docker_blocked(console, d)
         record_job(d, status="BLOCKED")
-        console.print("[bold red]bluet run aborted: sandboxed verification requires Docker.[/bold red]")
+        console.print(
+            "[bold red]bluet run aborted: sandboxed verification requires Docker.[/bold red]"
+        )
         raise typer.Exit(1)
 
     if d.backend == BACKEND_HARDENED:
@@ -299,5 +352,7 @@ def run(
         raise typer.Exit(2)
 
     engine = engine_for_repo(repo_dir)
-    asyncio.run(_drive(console, engine, repo_dir, files, backend=d.backend))
+    asyncio.run(
+        _drive(console, engine, repo_dir, files, backend=d.backend, guardrail_ok=guardrail_ok)
+    )
     record_job(d, status="COMPLETED")

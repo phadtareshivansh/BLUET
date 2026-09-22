@@ -39,12 +39,14 @@ class TestDockerCommand:
         monkeypatch.setattr(rt, "host_os", lambda: "Windows")
         monkeypatch.setattr(rt, "default_wsl_distro", lambda: "Ubuntu-22.04")
         assert rt.docker_command(["info"]) == [
-            "wsl.exe", "-d", "Ubuntu-22.04", "docker", "info",
+            "wsl.exe",
+            "-d",
+            "Ubuntu-22.04",
+            "docker",
+            "info",
         ]
 
-    def test_windows_without_running_distro_raises(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_windows_without_running_distro_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
         _patch_base(monkeypatch)
         monkeypatch.setattr(rt, "host_os", lambda: "Windows")
         monkeypatch.setattr(rt, "default_wsl_distro", lambda: None)
@@ -89,9 +91,7 @@ def _missing_docker(_cmd, **_kwargs) -> subprocess.CompletedProcess[str]:
 
 
 class TestDiagnose:
-    def test_docker_down_blocks_with_no_backend(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_docker_down_blocks_with_no_backend(self, monkeypatch: pytest.MonkeyPatch) -> None:
         _patch_base(monkeypatch)
         monkeypatch.setattr(rt.subprocess, "run", _fake_run(info_rc=1))
         d = rt.diagnose()
@@ -102,9 +102,7 @@ class TestDiagnose:
             rt.require_sandbox_ready(d)
         assert "without Docker" in str(excinfo.value)
 
-    def test_gvisor_available_selects_gvisor(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_gvisor_available_selects_gvisor(self, monkeypatch: pytest.MonkeyPatch) -> None:
         _patch_base(monkeypatch)
         monkeypatch.setattr(rt.subprocess, "run", _fake_run(info_rc=0, gvisor_rc=0))
         d = rt.diagnose()
@@ -128,7 +126,10 @@ class TestDiagnose:
         limits = rt.RuntimeLimits()
         assert limits.as_text() == "memory=2g, network=none, read-only, cap-drop=ALL"
         assert limits.as_flags() == [
-            "--memory=2g", "--network=none", "--read-only", "--cap-drop=ALL",
+            "--memory=2g",
+            "--network=none",
+            "--read-only",
+            "--cap-drop=ALL",
         ]
 
     def test_limits_are_configurable(self) -> None:
@@ -148,8 +149,7 @@ class TestGvisorDryRunCommand:
         monkeypatch.setattr(
             rt.subprocess,
             "run",
-            lambda cmd, **_kwargs: seen.append(list(cmd))
-            or _fake_run(info_rc=0, gvisor_rc=0)(cmd),
+            lambda cmd, **_kwargs: seen.append(list(cmd)) or _fake_run(info_rc=0, gvisor_rc=0)(cmd),
         )
         rt.diagnose()
         assert any(any("runsc" in part for part in argv) for argv in seen)

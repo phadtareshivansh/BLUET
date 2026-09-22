@@ -30,7 +30,7 @@ try:
     import moss  # noqa: F401
 except ImportError:
     pytest.skip(
-        "moss SDK not installed; run `pip install \"bluet[moss]\"` or "
+        'moss SDK not installed; run `pip install "bluet[moss]"` or '
         "`uv sync --extra moss` to run the Moss latency benchmark",
         allow_module_level=True,
     )

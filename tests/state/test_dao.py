@@ -78,9 +78,7 @@ async def test_create_job_roundtrip(session: AsyncSession) -> None:
 async def test_create_job_default_backend_from_cache(
     session: AsyncSession, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(
-        "bluet.state.repository.resolve_backend", lambda: "hardened-docker"
-    )
+    monkeypatch.setattr("bluet.state.repository.resolve_backend", lambda: "hardened-docker")
     job = await create_job(session, "/repo/b")
     assert job.repo_path == "/repo/b"
     assert job.backend == "hardened-docker"
@@ -90,9 +88,7 @@ async def test_create_job_default_backend_from_cache(
 async def test_create_job_explicit_backend_wins(
     session: AsyncSession, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(
-        "bluet.state.repository.resolve_backend", lambda: ("gvisor")
-    )
+    monkeypatch.setattr("bluet.state.repository.resolve_backend", lambda: "gvisor")
     job = await create_job(session, "/repo/c", backend="hardened-docker")
     assert job.backend == "hardened-docker"
 
@@ -101,9 +97,7 @@ async def test_create_job_explicit_backend_wins(
 async def test_create_job_illegal_backend_falls_back_to_unknown(
     session: AsyncSession, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(
-        "bluet.state.repository.resolve_backend", lambda: "gvisor"
-    )
+    monkeypatch.setattr("bluet.state.repository.resolve_backend", lambda: "gvisor")
     job = await create_job(session, "/repo/d", backend="nonsense")
     assert job.backend == "unknown"
 

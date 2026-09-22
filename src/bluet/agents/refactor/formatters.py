@@ -17,10 +17,12 @@ from bluet.agents.refactor.errors import RefactorError
 #: from stdout. Python lands here now; Java slots in during Prompt 2.6.
 FORMATTERS: dict[str, tuple[str, list[str]]] = {
     "python": ("ruff", ["format", "-"]),
+    "java": ("google-java-format", ["-"]),
 }
 
 _INSTALL_HINTS: dict[str, str] = {
     "ruff": "install it with `pip install ruff` (or `uv add --dev ruff`)",
+    "google-java-format": "install it with `brew install google-java-format` (macOS) or `apt-get install google-java-format` (Linux), or download the JAR from https://github.com/google/google-java-format/releases",
 }
 
 

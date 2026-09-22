@@ -10,6 +10,7 @@ can resume with the same ``thread_id``.
 
 from __future__ import annotations
 
+import dataclasses
 import os
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
@@ -31,6 +32,7 @@ from bluet.agents.refactor.errors import RefactorError
 from bluet.agents.verifier import ParityVerifier
 from bluet.context_store import ContextIndexError, ContextStore, InMemoryContextStore
 from bluet.errors import BluetLLMError
+from bluet.guardrails import EnkryptGuardrail
 from bluet.orchestrator.events import EventBus
 from bluet.state.repository import record_parity_score
 
@@ -61,6 +63,7 @@ class BluetState(TypedDict):
     parity_result: NotRequired[dict[str, Any] | None]
     counter_examples: NotRequired[list[dict[str, Any]] | None]
     retry_count: int
+    guardrail_halt: bool = False
 
 
 def _event_payload(state: BluetState, stage: str) -> dict[str, Any]:
@@ -154,7 +157,11 @@ async def context_index_node(
 
 
 async def refactor_node(
-    bus: EventBus, state: BluetState, *, refactor_agent: RefactorAgent
+    bus: EventBus,
+    state: BluetState,
+    *,
+    refactor_agent: RefactorAgent,
+    guardrail: EnkryptGuardrail | None = None,
 ) -> StateUpdate:
     """Synthesize a formatted :class:`ProposedCode` for the job's LogicSpec.
 
@@ -166,6 +173,13 @@ async def refactor_node(
     self-heal counter-examples carried in the state are forwarded so the
     whole-file pass fixes the named regressions (populated by the verifier in
     Prompt 2.3).
+
+    Guardrails (Prompt 2.4): before calling the refactor agent the legacy
+    source is scanned for hardcoded secrets; after generation the proposed
+    code is scanned for OWASP-flagged patterns. A ``GuardrailViolation`` with
+    ``severity == Severity.BLOCK`` publishes ``feedback.warning``
+    (``source="guardrail"``) and returns ``guardrail_halt=True`` so
+    ``_route`` halts the job immediately rather than entering the retry loop.
     """
     await bus.publish(TOPIC_REFACTOR, _event_payload(state, "refactor"))
     spec = get_logic_spec(state)
@@ -175,6 +189,27 @@ async def refactor_node(
             {**_event_payload(state, "refactor"), "source": "refactor", "reason": "no_logic_spec"},
         )
         return {}
+
+    if guardrail is not None:
+        try:
+            legacy_path = Path(state["repo_path"]) / state["current_file"]
+            legacy_source = legacy_path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            legacy_source = ""
+        report = guardrail.scan_legacy_input(legacy_source)
+        if report.blocked:
+            v = report.violations[0]
+            await bus.publish(
+                TOPIC_WARNING,
+                {
+                    **_event_payload(state, "refactor"),
+                    "source": "guardrail",
+                    "reason": f"{v.category.value}: {v.pattern} on line {v.line}",
+                    "guardrail_violation": dataclasses.asdict(v),
+                },
+            )
+            return {"proposed_code": None, "guardrail_halt": True}
+
     counter_examples = [
         CounterExample.model_validate(entry) for entry in (state.get("counter_examples") or [])
     ]
@@ -191,6 +226,22 @@ async def refactor_node(
             {**_event_payload(state, "refactor"), "source": "refactor", "reason": str(exc)},
         )
         return {"proposed_code": None}
+
+    if guardrail is not None:
+        report = guardrail.scan_proposed_output(proposed.code)
+        if report.blocked:
+            v = report.violations[0]
+            await bus.publish(
+                TOPIC_WARNING,
+                {
+                    **_event_payload(state, "refactor"),
+                    "source": "guardrail",
+                    "reason": f"{v.category.value}: {v.pattern} on line {v.line}",
+                    "guardrail_violation": dataclasses.asdict(v),
+                },
+            )
+            return {"proposed_code": None, "guardrail_halt": True}
+
     return {"proposed_code": proposed.model_dump()}
 
 
@@ -314,6 +365,8 @@ _DEFAULT_VERIFY_NODE: Node = verify_node
 
 
 def _route(state: BluetState) -> str:
+    if state.get("guardrail_halt"):
+        return "failed"
     parity = state.get("parity_result") or {}
     if parity.get("status") in {"pass", "skip"}:
         return "success"
@@ -331,6 +384,7 @@ def build_refactor_graph(
     refactor_agent: RefactorAgent | None = None,
     session_factory: Callable[[], AsyncSession] | None = None,
     verifier: ParityVerifier | None = None,
+    guardrail: EnkryptGuardrail | None = None,
 ):
     """Assemble and compile the refactor graph.
 
@@ -342,13 +396,20 @@ def build_refactor_graph(
     ``verifier`` (custom parity agent). ``checkpointer`` opts into pause/resume
     persistence. ``context_store`` backs the ``context_index`` node (in-memory
     by default so the offline suite stays hermetic; pass a real SDK-backed
-    store to benchmark against Moss).
+    store to benchmark against Moss). ``guardrail`` enables the inline Enkrypt
+    proxy around the refactor node (Prompt 2.4).
     """
     graph = StateGraph(BluetState)
     graph.add_node("analyze", partial(analyze_node, bus))
     graph.add_node("context_index", partial(context_index_node, bus, context_store=context_store))
     graph.add_node(
-        "refactor", partial(refactor_node, bus, refactor_agent=refactor_agent or RefactorAgent())
+        "refactor",
+        partial(
+            refactor_node,
+            bus,
+            refactor_agent=refactor_agent or RefactorAgent(),
+            guardrail=guardrail,
+        ),
     )
     graph.add_node(
         "verify",
