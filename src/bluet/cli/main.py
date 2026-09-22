@@ -6,6 +6,7 @@ import typer
 
 from bluet.cli.diff import diff
 from bluet.cli.doctor import doctor
+from bluet.cli.lsp import lsp
 from bluet.cli.run import run
 from bluet.cli.status import status
 
@@ -18,6 +19,7 @@ app.command(name="doctor")(doctor)
 app.command(name="run")(run)
 app.command(name="status")(status)
 app.command(name="diff")(diff)
+app.command(name="lsp")(lsp)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,44 @@
+IDENTIFICATION DIVISION.
+       PROGRAM-ID. FILE-IO-DEMO.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUT-FILE ASSIGN TO "INPUT.TXT"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT OUTPUT-FILE ASSIGN TO "OUTPUT.TXT"
+               ORGANIZATION IS LINE SEQUENTIAL.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  INPUT-FILE.
+       01  INPUT-RECORD     PIC X(80).
+
+       FD  OUTPUT-FILE.
+       01  OUTPUT-RECORD    PIC X(80).
+
+       WORKING-STORAGE SECTION.
+       01  WS-EOF-FLAG      PIC X VALUE 'N'.
+       01  WS-LINE-COUNT    PIC 9(4) VALUE ZERO.
+
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           OPEN INPUT INPUT-FILE.
+           OPEN OUTPUT OUTPUT-FILE.
+           
+           PERFORM READ-AND-PROCESS UNTIL WS-EOF-FLAG = 'Y'.
+           
+           CLOSE INPUT-FILE.
+           CLOSE OUTPUT-FILE.
+           DISPLAY "Lines processed: " WS-LINE-COUNT.
+           STOP RUN.
+
+       READ-AND-PROCESS.
+           READ INPUT-FILE
+               AT END
+                   MOVE 'Y' TO WS-EOF-FLAG
+               NOT AT END
+                   MOVE INPUT-RECORD TO OUTPUT-RECORD
+                   WRITE OUTPUT-RECORD
+                   ADD 1 TO WS-LINE-COUNT
+           END-READ.

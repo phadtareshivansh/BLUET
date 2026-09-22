@@ -11,6 +11,7 @@ from bluet.agents.analyzer.base import (
     parser_for_source,
     register,
 )
+from bluet.agents.analyzer.cobol_parser import CobolParserImpl
 from bluet.agents.analyzer.java_parser import JavaParser
 from bluet.agents.analyzer.models import (
     BranchSpec,
@@ -22,6 +23,7 @@ from bluet.agents.analyzer.python_parser import PythonParser
 
 __all__ = [
     "BranchSpec",
+    "CobolParserImpl",
     "FunctionDef",
     "JavaParser",
     "LanguageParser",

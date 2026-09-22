@@ -1,0 +1,84 @@
+{
+  "name": "bluet",
+  "displayName": "BLUET Refactor",
+  "description": "Agentic incremental refactoring toolbox - LSP client for BLUET language server",
+  "version": "0.1.0",
+  "publisher": "bluet",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:python",
+    "onLanguage:java"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "bluet.runRefactor",
+        "title": "BLUET: Run Refactor",
+        "category": "BLUET"
+      },
+      {
+        "command": "bluet.showDiff",
+        "title": "BLUET: Show Diff",
+        "category": "BLUET"
+      }
+    ],
+    "configuration": {
+      "title": "BLUET",
+      "properties": {
+        "bluet.serverPath": {
+          "type": "string",
+          "default": "bluet",
+          "description": "Path to bluet CLI executable"
+        },
+        "bluet.workspaceRoot": {
+          "type": "string",
+          "default": "${workspaceFolder}",
+          "description": "Workspace root for the language server"
+        },
+        "bluet.targetLanguage": {
+          "type": "string",
+          "default": "",
+          "enum": ["", "python", "java", "rust", "go", "typescript"],
+          "description": "Target language for refactoring (empty = detect from file extension)"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "bluet.runRefactor",
+        "key": "ctrl+alt+r",
+        "mac": "cmd+alt+r",
+        "when": "editorTextFocus && (resourceLangId == python || resourceLangId == java)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "test": "jest"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vsce": "^2.15.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  }
+}

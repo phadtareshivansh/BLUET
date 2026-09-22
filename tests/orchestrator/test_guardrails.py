@@ -156,6 +156,7 @@ def test_guardrail_scanner_aws_key():
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_guardrail_halt_on_secret_in_legacy(
     session_factory: async_sessionmaker,
     job,
@@ -195,6 +196,7 @@ async def test_guardrail_halt_on_secret_in_legacy(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_guardrail_halt_on_owasp_in_proposed(
     session_factory: async_sessionmaker,
     job,
@@ -231,6 +233,7 @@ async def test_guardrail_halt_on_owasp_in_proposed(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_guardrail_ok_flag_bypasses_halt(
     session_factory: async_sessionmaker,
     job,
@@ -266,6 +269,7 @@ async def test_guardrail_ok_flag_bypasses_halt(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_guardrail_ok_flag_on_proposed_owasp(
     session_factory: async_sessionmaker,
     job,
@@ -301,6 +305,7 @@ async def test_guardrail_ok_flag_on_proposed_owasp(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_clean_code_passes_guardrails(
     session_factory: async_sessionmaker,
     job,

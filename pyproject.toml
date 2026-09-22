@@ -22,6 +22,8 @@ dependencies = [
     "jinja2>=3.1.0",
     "hypothesis>=6.0.0",
     "z3-solver==4.13.0.0",
+    "docker>=7.0.0",
+    "antlr4-python3-runtime>=4.13.0",
 ]
 
 # Optional backends. ``moss`` installs the real Moss SDK (async-heavy:
@@ -56,6 +58,12 @@ include = ["src/bluet"]
 
 [pytest]
 addopts = []
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "docker: marks tests as requiring Docker daemon (deselect with '-m \"not docker\"')",
+    "unit: marks tests as unit tests (fast, no external deps)",
+    "lsp: marks tests as LSP integration tests",
+]
 
 [tool.ruff]
 target-version = "py311"

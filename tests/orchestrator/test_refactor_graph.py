@@ -151,6 +151,7 @@ async def test_success_path_ends_after_first_verify(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_analyze_node_round_trips_real_logic_spec(
     session_factory: async_sessionmaker,
     job,
@@ -186,6 +187,7 @@ async def test_analyze_node_round_trips_real_logic_spec(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_analyze_event_persists_to_agent_event(
     session_factory: async_sessionmaker,
     job,
@@ -254,6 +256,7 @@ def _fixture_state(job_id: int) -> dict:
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_refactor_self_heal_loop_on_parity_failure(
     session_factory: async_sessionmaker,
     job,
@@ -302,6 +305,7 @@ async def test_refactor_self_heal_loop_on_parity_failure(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_refactor_correct_proposal_passes_on_first_verify(
     session_factory: async_sessionmaker,
     job,
@@ -345,6 +349,7 @@ async def test_refactor_correct_proposal_passes_on_first_verify(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_refactor_node_fails_soft_on_llm_unavailable(
     session_factory: async_sessionmaker,
     job,
@@ -375,6 +380,7 @@ async def test_refactor_node_fails_soft_on_llm_unavailable(
 
 
 @pytest.mark.asyncio
+@pytest.mark.slow
 async def test_refactor_node_fails_soft_on_schema_output_error(
     session_factory: async_sessionmaker,
     job,

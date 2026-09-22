@@ -29,6 +29,12 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# VS Code Extension
+vscode-extension/node_modules/
+vscode-extension/out/
+vscode-extension/*.vsix
+vscode-extension/.vscode-test/
+
 # Editors / OS
 .idea/
 .vscode/
@@ -39,3 +45,7 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Generated DB files
+test.db
+tests/fixtures/**/.bluet/

@@ -1,0 +1,21 @@
+IDENTIFICATION DIVISION.
+       PROGRAM-ID. CONTROL-FLOW-DEMO.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-COUNTER    PIC 9(3) VALUE ZERO.
+       01  WS-LIMIT      PIC 9(3) VALUE 10.
+       01  WS-TOTAL      PIC 9(5) VALUE ZERO.
+
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           PERFORM CALCULATE-TOTAL UNTIL WS-COUNTER > WS-LIMIT.
+           DISPLAY "Total: " WS-TOTAL.
+           STOP RUN.
+
+       CALCULATE-TOTAL.
+           ADD WS-COUNTER TO WS-TOTAL.
+           ADD 1 TO WS-COUNTER.
+           IF WS-COUNTER > 5
+               DISPLAY "Counter exceeded 5"
+           END-IF.

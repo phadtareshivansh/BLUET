@@ -14,7 +14,7 @@ from typing import ClassVar
 
 from bluet.agents.analyzer.models import LogicSpec
 
-_SUFFIX_TO_LANGUAGE = {".py": "python", ".java": "java"}
+_SUFFIX_TO_LANGUAGE = {".py": "python", ".java": "java", ".cob": "cobol", ".cbl": "cobol", ".cobol": "cobol"}
 
 _ALIASES = {
     "py": "python",
@@ -27,6 +27,9 @@ _ALIASES = {
     "java8": "java",
     "java 8": "java",
     "jdk8": "java",
+    "cobol": "cobol",
+    "cbl": "cobol",
+    "cob": "cobol",
 }
 
 
@@ -81,3 +84,23 @@ def parser_for_source(target_language: str | None, filename: str | None) -> Lang
         if suffix in _SUFFIX_TO_LANGUAGE:
             return get_parser(_SUFFIX_TO_LANGUAGE[suffix])
     return None
+
+
+# Register built-in parsers
+try:
+    from bluet.agents.analyzer.python_parser import PythonParser
+    register(PythonParser)
+except ImportError:
+    pass
+
+try:
+    from bluet.agents.analyzer.java_parser import JavaParser
+    register(JavaParser)
+except ImportError:
+    pass
+
+try:
+    from bluet.agents.analyzer.cobol_parser import CobolParserImpl
+    register(CobolParserImpl)
+except ImportError:
+    pass

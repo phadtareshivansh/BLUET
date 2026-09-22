@@ -42,8 +42,11 @@ _LANGUAGE_ALIASES: dict[str, str] = {
     "python3": "python",
     "java": "java",
     "java8": "java",
+    "cobol": "cobol",
+    "cbl": "cobol",
+    "cob": "cobol",
 }
-_SUFFIX_TO_LANGUAGE: dict[str, str] = {".py": "python", ".java": "java"}
+_SUFFIX_TO_LANGUAGE: dict[str, str] = {".py": "python", ".java": "java", ".cob": "cobol", ".cbl": "cobol", ".cobol": "cobol"}
 
 _TEMPLATES: dict[str, Environment] = {
     "python": Environment(keep_trailing_newline=True).from_string(
@@ -51,6 +54,9 @@ _TEMPLATES: dict[str, Environment] = {
     ),
     "java": Environment(keep_trailing_newline=True).from_string(
         Path(resources.files("bluet.agents.refactor").joinpath("templates", "java.py.j2")).read_text()
+    ),
+    "cobol": Environment(keep_trailing_newline=True).from_string(
+        Path(resources.files("bluet.agents.refactor").joinpath("templates", "cobol.py.j2")).read_text()
     ),
 }
 
@@ -86,6 +92,10 @@ def _function_stub(fn: FunctionDef, language: str = "python") -> str:
         # Java method stub - we don't know return type from analyzer, use void
         return_type = "void"
         return f"    public {return_type} {fn.name}({params}) {{{hint}\n        // TODO: implement\n    }}"
+    if language == "cobol":
+        # COBOL paragraph stub - COBOL doesn't have functions, paragraphs are the unit
+        hint = f"  # {('; '.join(io))}" if io else ""
+        return f"       {fn.name.upper()}.\n{hint}\n           # TODO: implement\n           GOBACK."
     # Python default
     hint = f"  # {('; '.join(io))}" if io else ""
     return f"def {fn.name}({params}):{hint}  # line {fn.line}\n    pass"

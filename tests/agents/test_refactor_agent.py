@@ -225,13 +225,14 @@ async def test_language_aliases_route_to_python_formatter() -> None:
     assert fmt.calls[1][1] == "python", "empty target falls back to the .py suffix"
 
     assert normalize_language("java8") == "java"
+    assert normalize_language("cobol") == "cobol"
+    assert normalize_language("cbl") == "cobol"
     assert normalize_language("", filename="x.py") == "python"
-    with pytest.raises(RefactorError, match="cobol"):
-        normalize_language("cobol")
+    assert normalize_language("", filename="x.cob") == "cobol"
     with pytest.raises(RefactorError, match="unsupported"):
         normalize_language("")
     with pytest.raises(RefactorError, match="unsupported"):
-        await agent.refactor(_fixture_spec(), target_language="cobol", current_file="x.cob")
+        await agent.refactor(_fixture_spec(), target_language="unknown", current_file="x.unknown")
 
 
 def test_template_renders_scaffold() -> None:
