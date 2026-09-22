@@ -50,7 +50,8 @@ class TestDockerSandboxRunner:
         host_config = runner._get_host_config()
         
         assert host_config["network_mode"] == "none"
-        assert host_config["read_only"] is True
+        # read_only is not set (False by default) because we need put_archive to work
+        assert host_config.get("read_only") is not True
         assert "ALL" in host_config["cap_drop"]
         assert host_config["mem_limit"] == "512m"
         assert host_config["runtime"] == "runc"
@@ -69,7 +70,8 @@ class TestDockerSandboxRunner:
         
         assert host_config["runtime"] == "runsc"
         assert host_config["network_mode"] == "none"
-        assert host_config["read_only"] is True
+        # read_only is not set (False by default) because we need put_archive to work
+        assert host_config.get("read_only") is not True
 
     @pytest.mark.asyncio
     async def test_python_execution(self):

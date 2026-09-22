@@ -54,7 +54,27 @@ def _render_side_by_side(legacy: str, proposed: str) -> str:
 
 
 @app.command(name="diff")
-async def diff(
+def diff(
+    job_id: Annotated[int, typer.Argument(help="Job ID to show diff for")],
+    repo: Annotated[
+        Path,
+        typer.Option("--repo", "-r", help="Repository path (default: .bluet/ in cwd)"),
+    ] = Path(".bluet"),
+    export: Annotated[
+        Path | None,
+        typer.Option("--export", "-e", help="Write diff to file instead of stdout"),
+    ] = None,
+    side_by_side: Annotated[
+        bool,
+        typer.Option("--side-by-side/--unified", help="Side-by-side view (default: unified diff)"),
+    ] = False,
+) -> None:
+    """Show colorized diff between legacy and proposed code for a completed job."""
+    import asyncio
+    asyncio.run(_diff_async(job_id, repo, export, side_by_side))
+
+
+async def _diff_async(
     job_id: Annotated[int, typer.Argument(help="Job ID to show diff for")],
     repo: Annotated[
         Path,

@@ -39,7 +39,7 @@ class RuntimeLimits:
 
     memory: str = "2g"
     network: str = "none"
-    read_only: bool = True
+    read_only: bool = False
     cap_drop: tuple[str, ...] = ("ALL",)
 
     def as_flags(self) -> list[str]:

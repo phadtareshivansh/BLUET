@@ -124,11 +124,10 @@ class TestDiagnose:
 
     def test_limits_defaults_and_flags(self) -> None:
         limits = rt.RuntimeLimits()
-        assert limits.as_text() == "memory=2g, network=none, read-only, cap-drop=ALL"
+        assert limits.as_text() == "memory=2g, network=none, read-write, cap-drop=ALL"
         assert limits.as_flags() == [
             "--memory=2g",
             "--network=none",
-            "--read-only",
             "--cap-drop=ALL",
         ]
 

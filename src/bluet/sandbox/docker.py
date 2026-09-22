@@ -105,6 +105,9 @@ FROM $BASE_IMAGE
 # Install test dependencies
 RUN pip install --no-cache-dir hypothesis pytest
 
+# Create workdir with write permissions (needed for read-only container with put_archive)
+RUN mkdir -p /workdir && chmod 777 /workdir
+
 WORKDIR /workdir
 ENTRYPOINT ["python"]
 """
@@ -113,6 +116,9 @@ ENTRYPOINT ["python"]
         return f"""
 ARG BASE_IMAGE=maven:3.9-eclipse-temurin-8
 FROM $BASE_IMAGE
+
+# Create workdir with write permissions (needed for read-only container with put_archive)
+RUN mkdir -p /workdir && chmod 777 /workdir
 
 WORKDIR /workdir
 ENTRYPOINT ["mvn"]
@@ -135,16 +141,19 @@ ENTRYPOINT ["mvn"]
         runtime_flags = self._get_runtime_flags()
         
         # Common security settings
+        # Note: read_only is NOT set because we need put_archive to inject files
+        # We use tmpfs for /tmp but NOT for /workdir, so put_archive files persist
         host_config = {
             "network_mode": "none",
-            "read_only": True,
             "cap_drop": ["ALL"],
             "mem_limit": self._limits.memory,
             "cpu_period": 100000,
             "cpu_quota": 50000,  # 0.5 CPU
             "pids_limit": 100,
             "security_opt": ["no-new-privileges:true"],
-            "tmpfs": {"/tmp": "rw,noexec,nosuid,size=100m"},
+            "tmpfs": {
+                "/tmp": "rw,noexec,nosuid,size=100m",
+            },
             **runtime_flags,
         }
         
@@ -202,6 +211,34 @@ ENTRYPOINT ["mvn"]
                 tar.addfile(tarinfo, io.BytesIO(data))
         return tar_buffer.getvalue()
 
+    def _resolve_argv(self, argv: list[str]) -> list[str]:
+        """Resolve special argv prefixes like ::python::, ::pytest::, ::mvn::."""
+        argv = list(argv)
+        if not argv:
+            return argv
+        if argv[0] == "::python::":
+            # Inside container, use python3 from PATH
+            argv[0] = "python3"
+        elif argv[0] == "::pytest::":
+            argv = [
+                "python3",
+                "-m",
+                "pytest",
+                "-p",
+                "bluet_pytest_plugin",
+                "-x",
+                "test_parity.py",
+            ]
+        elif argv[0] == "::mvn::":
+            argv = ["mvn", "test", "-Dtest=ParityTest", "-q"]
+        elif argv[0] == "-c":
+            # Python -c convention: use python3 from container PATH
+            argv = ["python3"] + argv
+        elif argv[0].endswith(".py"):
+            # Python file: use python3 from container PATH
+            argv = ["python3"] + argv
+        return argv
+
     def _run_container_sync(
         self,
         tar_data: bytes,
@@ -211,17 +248,36 @@ ENTRYPOINT ["mvn"]
     ) -> ExecutionResult:
         """Synchronous container execution (run in thread pool)."""
         import time
+        import threading
         
         container = None
+        exec_id = None
+        timed_out = False
         start_time = time.time()
         
+        def timeout_handler():
+            nonlocal timed_out
+            timed_out = True
+            if container:
+                try:
+                    self._docker.api.kill(container["Id"])
+                except Exception:
+                    pass
+        
+        timer = threading.Timer(timeout, timeout_handler)
+        timer.start()
+        
         try:
-            # Create container
+            # Resolve special argv prefixes
+            argv = self._resolve_argv(argv)
+            
+            # Create container with a placeholder command that keeps it running
             host_config = self._docker.api.create_host_config(**self._get_host_config())
             
             container = self._docker.api.create_container(
                 image=self._image_tag,
-                command=argv,
+                command=["tail", "-f", "/dev/null"],  # Keep container running
+                entrypoint=[""],  # Override entrypoint
                 working_dir="/workdir",
                 host_config=host_config,
                 stdin_open=False,
@@ -231,36 +287,56 @@ ENTRYPOINT ["mvn"]
             
             container_id = container["Id"]
             
-            # Inject files via tar archive
-            self._docker.api.put_archive(container_id, "/workdir", tar_data)
-            
-            # Start container
+            # Start container first (activates tmpfs mounts)
             self._docker.api.start(container_id)
             
-            # Wait for completion with timeout
-            try:
-                result = self._docker.api.wait(container_id, timeout=timeout)
-                exit_code = result.get("StatusCode", -1)
-            except Exception as e:
-                # Timeout or other error
-                try:
-                    self._docker.api.kill(container_id)
-                except Exception:
-                    pass
+            # Inject files via tar archive into the running container
+            self._docker.api.put_archive(container_id, "/workdir", tar_data)
+            
+            # Execute the actual command via docker exec
+            exec_id = self._docker.api.exec_create(
+                container_id,
+                argv,
+                workdir="/workdir",
+                stdout=True,
+                stderr=True,
+            )["Id"]
+            
+            # Start exec and wait for completion with timeout
+            exec_start = self._docker.api.exec_start(exec_id, stream=False)
+            
+            # Check if timed out
+            if timed_out:
                 return ExecutionResult(
                     returncode=-1,
                     stdout="",
-                    stderr=f"Container execution failed: {e}",
+                    stderr=f"Execution timed out after {timeout}s",
                     timed_out=True,
                     runtime_seconds=time.time() - start_time,
                 )
             
-            # Get logs
-            logs = self._docker.api.logs(container_id, stdout=True, stderr=True, stream=False)
-            if isinstance(logs, bytes):
-                logs = logs.decode("utf-8", errors="replace")
+            # Wait for exec to complete
+            try:
+                exec_inspect = self._docker.api.exec_inspect(exec_id)
+                exit_code = exec_inspect.get("ExitCode", -1)
+            except Exception as e:
+                return ExecutionResult(
+                    returncode=-1,
+                    stdout="",
+                    stderr=f"Container execution failed: {e}",
+                    timed_out=timed_out,
+                    runtime_seconds=time.time() - start_time,
+                )
             
-            # Split stdout/stderr (Docker mixes them)
+            timer.cancel()
+            
+            # Get exec output
+            if isinstance(exec_start, bytes):
+                logs = exec_start.decode("utf-8", errors="replace")
+            else:
+                logs = exec_start
+            
+            # Split stdout/stderr
             stdout, stderr = self._split_logs(logs)
             
             runtime = time.time() - start_time
@@ -269,7 +345,7 @@ ENTRYPOINT ["mvn"]
                 returncode=exit_code,
                 stdout=stdout,
                 stderr=stderr,
-                timed_out=False,
+                timed_out=timed_out,
                 runtime_seconds=runtime,
             )
             
@@ -290,6 +366,8 @@ ENTRYPOINT ["mvn"]
                 runtime_seconds=time.time() - start_time,
             )
         finally:
+            if timer:
+                timer.cancel()
             # Always clean up container
             if container:
                 try:
