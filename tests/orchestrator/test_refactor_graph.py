@@ -18,14 +18,14 @@ from sqlalchemy.pool import StaticPool
 from bluet.agents.analyzer import LogicSpec
 from bluet.agents.refactor import CounterExample, ProposedCode
 from bluet.errors import LLMSchemaOutputError, LLMUnavailableError
-from bluet.orchestrator import (
+from bluet.orchestrator import EventBus
+from bluet.orchestrator.refactor_graph import (
     MAX_RETRIES,
-    EventBus,
     build_refactor_graph,
     open_sqlite_checkpointer,
     run_config,
+    verify_node,
 )
-from bluet.orchestrator.refactor_graph import verify_node
 from bluet.state.db import init_schema
 from bluet.state.repository import create_job, list_events_for_job
 

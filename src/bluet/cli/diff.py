@@ -13,12 +13,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from bluet.state.db import engine_for_repo
+from bluet.state.models import ParityScore
 from bluet.state.repository import (
     get_job_by_id,
     list_events_for_job,
     list_proposed_code_for_job,
 )
-from bluet.state.models import ParityScore
 
 app = typer.Typer(help="Show side-by-side diff for a completed job.")
 
