@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import sys
 from pathlib import Path
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -22,13 +23,15 @@ app = typer.Typer(
 
 @app.callback(invoke_without_command=True)
 def lsp(
-    workspace: Path | None = typer.Argument(
-        None,
-        help="Workspace root (defaults to current directory).",
-        file_okay=False,
-        dir_okay=True,
-        exists=True,
-    ),
+    workspace: Annotated[
+        Path | None,
+        typer.Argument(
+            help="Workspace root (defaults to current directory).",
+            file_okay=False,
+            dir_okay=True,
+            exists=True,
+        ),
+    ] = None,
 ) -> None:
     """Start the BLUET Language Server over stdio.
 
@@ -50,6 +53,6 @@ def lsp(
 
 async def _run_server() -> None:
     """Run the LSP server."""
-    async with serve_stdio() as server:
+    async with serve_stdio():
         # Keep the server running until stdin closes
         await asyncio.Event().wait()

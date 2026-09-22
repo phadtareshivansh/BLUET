@@ -15,8 +15,8 @@ from sqlalchemy.pool import StaticPool
 from bluet.agents.refactor import ProposedCode
 from bluet.guardrails import EnkryptGuardrail
 from bluet.guardrails.models import Category, GuardrailReport, Severity
-from bluet.orchestrator import (
-    EventBus,
+from bluet.orchestrator import EventBus
+from bluet.orchestrator.refactor_graph import (
     build_refactor_graph,
     open_sqlite_checkpointer,
     run_config,
